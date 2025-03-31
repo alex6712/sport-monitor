@@ -1,0 +1,6 @@
+# JetBrains Workspace
+/.idea
+
+# Virtual Environments
+/.venv
+/venv
