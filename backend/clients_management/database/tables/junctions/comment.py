@@ -1,14 +1,13 @@
 from typing import TYPE_CHECKING
-
 from uuid import UUID, uuid4
 
-from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint
+from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
     relationship,
 )
-from sqlalchemy.types import Uuid, String
+from sqlalchemy.types import String, Uuid
 
 from database.tables.base import Base
 

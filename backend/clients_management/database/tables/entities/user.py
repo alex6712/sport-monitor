@@ -1,5 +1,4 @@
 from typing import List, TYPE_CHECKING
-
 from uuid import UUID, uuid4
 
 from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint
@@ -8,7 +7,7 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
-from sqlalchemy.types import Uuid, String
+from sqlalchemy.types import String, Uuid
 
 from database.tables.base import Base
 
@@ -28,7 +27,7 @@ class User(Base):
         },
     )
 
-    id: Mapped[UUID] = mapped_column(Uuid, default=uuid4)
+    id: Mapped[UUID] = mapped_column(Uuid(), default=uuid4)
     username: Mapped[str] = mapped_column(String(256), nullable=False)
     password: Mapped[str] = mapped_column(String(256), nullable=True)
     email: Mapped[str] = mapped_column(String(256), nullable=True)
