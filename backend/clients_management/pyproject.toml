@@ -10,6 +10,10 @@ python = "^3.12"
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 pydantic = "^2.11.1"
 pydantic-settings = "^2.8.1"
+sqlalchemy = "^2.0.40"
+asyncpg = "^0.30.0"
+python-jose = {extras = ["cryptography"], version = "^3.4.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 
 [tool.poetry.group.dev.dependencies]

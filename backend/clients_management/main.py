@@ -9,7 +9,11 @@ settings: Settings = get_settings()
 tags_metadata = [
     {
         "name": "root",
-        "description": "Getting information about **application**.",
+        "description": "Получение информации о **приложении**.",
+    },
+    {
+        "name": "authorization",
+        "description": "Операции **регистрации** и **аутентификации**.",
     },
 ]
 

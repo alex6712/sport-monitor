@@ -14,17 +14,17 @@ router = APIRouter(
     "/",
     response_model=StandardResponse,
     status_code=status.HTTP_200_OK,
-    summary="Functionality check.",
+    summary="Проверка работоспособности.",
 )
 async def root():
-    """Root path for API health check.
+    """Корневой путь для проверки работоспособности API.
 
-    Does nothing but give positive feedback to the request.
+    Ничего не делает, кроме как возвращает положительный ответ на запрос.
 
     Returns
     -------
     response : StandardResponse
-        Answer about the correct operation of the server.
+        Ответ о корректной работе сервера.
     """
     return {"message": "API works!"}
 
@@ -33,28 +33,28 @@ async def root():
     "/app_info",
     response_model=AppInfoResponse,
     status_code=status.HTTP_200_OK,
-    summary="Application information.",
+    summary="Информация о приложении.",
 )
 async def app_info(settings: Annotated[Settings, Depends(get_settings)]):
-    """Path to get information about the server side of the application.
+    """Запрос на получение информации о серверной стороне приложения.
 
-    Information received:
-        * app_name : str, application name;
-        * app_version : str, app version;
-        * app_description : str, full description of the application;
-        * app_summary : str, a short description of the application;
-        * admin_name : str, full name of the person in charge;
-        * admin_email : str, email address to contact the person in charge.
+    Получаемая информация:
+        * app_name: str, имя приложения;
+        * app_version: str, версия приложения;
+        * app_description: str, полное описание приложения;
+        * app_summary: str, краткое описание приложения;
+        * admin_name: str, полное имя ответственного лица;
+        * admin_email: str, адрес электронной почты для связи с ответственным лицом.
 
     Parameters
     ----------
     settings : Settings
-        Application settings.
+        Настройки приложения.
 
     Returns
     -------
     response : AppInfoResponse
-        A response containing information about the server side of the application.
+        Ответ, содержащий информацию о серверной стороне приложения.
     """
     return {
         "app_name": settings.APP_NAME,

@@ -3,12 +3,12 @@ from pydantic import BaseModel, Field
 
 
 class StandardResponse(BaseModel):
-    """Standard response model from the server.
+    """Стандартная модель ответа сервера.
 
-    Used as the base response model for any request from this application.
+    Используется в качестве базовой модели ответа для любого запроса к этому приложению.
 
-    This means that any response from the server will contain the response code ``code``
-    and a message from the server ``message`` in the body of the response.
+    Это означает, что любой ответ с сервера будет содержать код ответа ``code``
+    и сообщение с сервера ``message`` в теле ответа.
 
     See Also
     --------
@@ -17,9 +17,9 @@ class StandardResponse(BaseModel):
     Attributes
     ----------
     code : int
-        The status code of the response from the server.
+        HTTP-код ответа сервера.
     message : str
-        Message from the server.
+        Сообщение с сервера.
     """
 
     code: int = Field(default=status.HTTP_200_OK, examples=[status.HTTP_200_OK])

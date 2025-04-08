@@ -4,9 +4,9 @@ from .standard import StandardResponse
 
 
 class AppInfoResponse(StandardResponse):
-    """Application information request response model.
+    """Модель ответа на запрос информации о приложении.
 
-    See ``StandardResponse`` for information about inherited attributes.
+    См. ``StandardResponse`` для получения информации об унаследованных атрибутах.
 
     See Also
     --------
@@ -15,22 +15,22 @@ class AppInfoResponse(StandardResponse):
     Attributes
     ----------
     app_name : str
-        The name of the application.
+        Название приложения.
     app_version : str
-        The current version of the application.
+        Текущая версия приложения.
     app_description : str
-        Full description of the application.
+        Полное описание приложения.
     app_summary : str
-        Brief description of the application.
+        Краткое описание приложения.
     admin_name : str
-        Name of the person responsible.
+        Имя ответственного лица.
     admin_email : str
-        Email address to contact the person in charge.
+        Адрес электронной почты для связи с ответственным лицом.
     """
 
     app_name: str = Field(examples=["Fast API"])
     app_version: str = Field(examples=["0.0.0"])
-    app_description: str = Field(examples=["REST API using FastAPI Python 3.11"])
+    app_description: str = Field(examples=["REST API using FastAPI Python 3.12"])
     app_summary: str = Field(examples=["The best web-application."])
     admin_name: str = Field(examples=["John Doe"])
     admin_email: EmailStr = Field(examples=["john.doe@gmail.com"])
