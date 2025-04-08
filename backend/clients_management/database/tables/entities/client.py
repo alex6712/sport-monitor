@@ -1,13 +1,19 @@
+from typing import List, TYPE_CHECKING
+
 from uuid import UUID, uuid4
 
 from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 from sqlalchemy.types import String, Uuid
 
 from database.tables.base import Base
+
+if TYPE_CHECKING:
+    from database.tables.junctions import Comment
 
 
 class Client(Base):
@@ -25,6 +31,8 @@ class Client(Base):
     surname: Mapped[str] = mapped_column(String(256), nullable=False)
     patronymic: Mapped[str] = mapped_column(String(256), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
+
+    comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="client")
 
     def __repr__(self) -> str:
         return (

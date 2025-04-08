@@ -1,13 +1,19 @@
+from typing import List, TYPE_CHECKING
+
 from uuid import UUID, uuid4
 
 from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 from sqlalchemy.types import Uuid, String
 
 from database.tables.base import Base
+
+if TYPE_CHECKING:
+    from database.tables.junctions import Comment
 
 
 class User(Base):
@@ -29,6 +35,8 @@ class User(Base):
     refresh_token: Mapped[str] = mapped_column(
         String(256), nullable=True, comment="Токен обновления токена доступа."
     )
+
+    comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="user")
 
     def __repr__(self) -> str:
         return (
