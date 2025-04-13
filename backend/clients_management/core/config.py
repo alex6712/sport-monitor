@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import List
 
-from pydantic import AnyHttpUrl, EmailStr, IPvAnyAddress, field_validator
+from pydantic import EmailStr, IPvAnyAddress, field_validator
 from pydantic_settings import SettingsConfigDict, BaseSettings
 
 
@@ -38,7 +38,7 @@ class Settings(BaseSettings):
         Development mode.
     INITIALIZE_DB : bool
         Recreate the DB.
-    BACKEND_CORS_ORIGINS : List[AnyHttpUrl]
+    BACKEND_CORS_ORIGINS : List[str]
         List of sources for CORS Middleware.
     DOMAIN : str` | `IPvAnyAddress
         The IP of the domain where the application is located.
@@ -78,7 +78,7 @@ class Settings(BaseSettings):
 
     INITIALIZE_DB: bool
 
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl]
+    BACKEND_CORS_ORIGINS: List[str]
 
     @classmethod
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")

@@ -58,6 +58,4 @@ async def initialize():
             )
         )
     else:
-        print(
-            "\n\033[92mDatabase initialized successfully.\033[0m\n"
-        )
+        print("\n\033[92mDatabase initialized successfully.\033[0m\n")
