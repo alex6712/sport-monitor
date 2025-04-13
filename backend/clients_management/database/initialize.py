@@ -59,5 +59,5 @@ async def initialize():
         )
     else:
         print(
-            "\n\033[92mDatabase initialized and products added successfully.\033[0m\n"
+            "\n\033[92mDatabase initialized successfully.\033[0m\n"
         )
