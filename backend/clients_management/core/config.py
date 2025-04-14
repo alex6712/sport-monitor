@@ -123,4 +123,7 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    print(abspath(".env"))
+    with open(abspath(".env"), "r", encoding="utf-8") as f:
+        print(f.read())
     return Settings()
