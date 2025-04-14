@@ -6,7 +6,7 @@ import uvicorn
 from core.config import Settings, get_settings
 from database import initialize
 
-STACK_TRACE = set
+STACK_TRACE = set()
 
 
 async def wait_for_db():
