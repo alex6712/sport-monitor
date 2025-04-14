@@ -36,7 +36,8 @@ jobs:
       - name: Set up .env file
         run: |
           touch .env
-          echo "${{ secrets.ENV_FILE }}" > .env
+          echo ${{ secrets.ENV_FILE }} >> .env
+          cat .env
 
       - name: Run tests
         run: poetry run pytest /tests
