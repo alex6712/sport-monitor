@@ -8,6 +8,8 @@ from database import initialize
 if __name__ == "__main__":
     settings: Settings = get_settings()
 
+    print(settings.DATABASE_URL)
+
     if settings.INITIALIZE_DB:
         asyncio.run(initialize())
 
