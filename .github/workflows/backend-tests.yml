@@ -40,4 +40,4 @@ jobs:
           cat .env
 
       - name: Run tests
-        run: poetry run pytest /tests
+        run: poetry run pytest tests
