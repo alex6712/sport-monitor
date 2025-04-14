@@ -35,6 +35,7 @@ jobs:
 
       - name: Set up .env file
         run: |
+          echo ${{ secrets.ENV_FILE }}
           touch .env
           echo ${{ secrets.ENV_FILE }} >> .env
           cat .env
