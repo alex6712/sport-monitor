@@ -1,18 +1,19 @@
 version: '3.12'
 
 services:
-  app:
+  clients_management_service:
     build: .
     container_name: clients_management_service
     env_file: .env
     environment:
       - BACKEND_PORT=${BACKEND_PORT}
+      - DATABASE_URL=postgresql+asyncpg://${DATABASE_USER}:${DATABASE_PASSWORD}@clients_management_database:${DATABASE_PORT}/${DATABASE_NAME}
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
-      - db
+      - database
 
-  db:
+  clients_management_database:
     image: postgres:17
     container_name: clients_management_database
     env_file: .env
