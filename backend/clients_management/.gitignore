@@ -6,7 +6,7 @@
 /venv
 
 # .env
-.env
+**.env
 
 # PyCache
 **/__pycache__
