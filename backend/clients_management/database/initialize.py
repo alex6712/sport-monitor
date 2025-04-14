@@ -21,8 +21,7 @@ async def initialize():
     settings: Settings = get_settings()
 
     engine: AsyncEngine = create_async_engine(
-        url=f"postgresql+asyncpg://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DOMAIN}"
-        f":{settings.DATABASE_PORT}/{settings.DATABASE_NAME}",
+        url=settings.DATABASE_URL,
         echo=False,
         pool_pre_ping=True,
     )
