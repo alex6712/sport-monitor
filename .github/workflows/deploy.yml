@@ -39,7 +39,7 @@ jobs:
             mkdir -p ~/sport_monitor/backend/clients_management
           EOF
   
-          rsync -az --delete ./backend/clients_managements/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/sport_monitor/backend/clients_management
+          rsync -az --delete backend/clients_managements/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/sport_monitor/backend/clients_management
 
       - name: Deploy with Docker Compose
         run: |
