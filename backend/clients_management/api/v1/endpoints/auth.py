@@ -93,7 +93,16 @@ async def sign_up(
     except IntegrityError as integrity_error:
         await session.rollback()
 
-        if result := re.search(r'"\((.*)\)=\((.*)\)"', str(integrity_error.orig)):
+        # Необходимо для тестов, т.к. текст ошибки SQLite отличается от PostgreSQL
+        if "sqlite3" in str(integrity_error):
+            column, *_ = re.search(r"\.(.*)", str(integrity_error.orig)).groups()
+            value: str = user.model_dump()[column]
+
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f'User with {column}="{value}" already exists!',
+            )
+        elif result := re.search(r'"\((.*)\)=\((.*)\)"', str(integrity_error.orig)):
             column, value = result.groups()
 
             raise HTTPException(

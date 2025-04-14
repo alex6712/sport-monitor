@@ -1,4 +1,5 @@
 from functools import lru_cache
+from os.path import abspath
 from typing import List
 
 from pydantic import EmailStr, IPvAnyAddress, field_validator
@@ -56,6 +57,8 @@ class Settings(BaseSettings):
         Database name.
     DATABASE_URL : PostgresDsn
         Connection string (link) to the database.
+    TEST_DATABASE_URL : str
+        Строка подключения к тестовой базе данных.
     JWT_SECRET_KEY : str
         The secret key to encode the JSON Web Token.
     JWT_ALGORITHM : str
@@ -80,8 +83,8 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: List[str]
 
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")  # noqa
     @classmethod
-    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     def assemble_cors_origins(cls, value: List[str] | str) -> List[str] | str:
         if isinstance(value, str) and not value.startswith("["):
             return [i.strip() for i in value.split(",")]
@@ -103,6 +106,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str
 
     DATABASE_URL: str
+    TEST_DATABASE_URL: str
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
@@ -110,9 +114,10 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_LIFETIME_DAYS: int
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=abspath(".env"),
         env_file_encoding="utf-8",
         case_sensitive=True,
+        enable_decoding=False,
     )
 
 
