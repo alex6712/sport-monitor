@@ -48,6 +48,7 @@ jobs:
             set -a
             source .env
             set +a
+            cat .env
             docker compose down
             docker compose up -d --build
           EOF
