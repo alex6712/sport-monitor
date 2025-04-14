@@ -26,6 +26,12 @@ jobs:
           touch .env
           echo '${{ secrets.ENV_FILE }}' > .env
           cat .env
+          
+      - name: Check if the directory exists
+        run: ls -alh
+
+      - name: Print current directory
+        run: pwd
 
       - name: Copy project to server
         run: |
