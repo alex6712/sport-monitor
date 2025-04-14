@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "clients-management"
-version = "0.1.0"
-description = ""
+name = "Clients Management"
+version = "0.1.2"
+description = "Сервис менеджмента клиентов."
 authors = ["alex6712 <alexeivanyukov@yandex.ru>"]
-readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
