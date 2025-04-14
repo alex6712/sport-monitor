@@ -45,6 +45,9 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             cd ~/sport_monitor/backend/clients_management
+            set -a
+            source .env
+            set +a
             docker compose down
             docker compose up -d --build
           EOF
