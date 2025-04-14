@@ -11,7 +11,7 @@ services:
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
-      - database
+      - clients_management_database
 
   clients_management_database:
     image: postgres:17
