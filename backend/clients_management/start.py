@@ -13,7 +13,8 @@ async def wait_for_db():
             conn = await asyncpg.connect(settings.DATABASE_URL)
             await conn.close()
             return True
-        except Exception as _:
+        except Exception as e:
+            print(e)
             await asyncio.sleep(2)
     return False
 
