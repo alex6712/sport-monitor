@@ -23,9 +23,9 @@ jobs:
 
       - name: Set up .env file
         run: |
-          touch .env
-          echo '${{ secrets.ENV_FILE }}' > .env
-          cat .env
+          touch ./backend/clients_management/.env
+          echo '${{ secrets.ENV_FILE }}' > ./backend/clients_management/.env
+          cat ./backend/clients_management/.env
           
       - name: Check if the directory exists
         run: ls -alh
