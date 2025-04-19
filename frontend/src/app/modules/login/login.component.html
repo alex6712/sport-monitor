@@ -1,0 +1,57 @@
+<tui-loader [showLoader]="isLoading">
+    <div class="login__page">
+        <div class="container">
+            <div class="login__inner">
+                <div class="login__swapgroup">
+                    <button class="login__swapmode"
+                        (click)="setLoginFormMode()">
+                        Авторизация
+                    </button>
+                    <button class="login__swapmode"
+                        (click)="setRegisterFormMode()">
+                        Регистрация
+                    </button>
+                </div>
+                <div class="login__wrapper" *ngIf="isFormLogin; else register">
+                    <h2 class="login__title">Авторизация</h2>
+                    <form [formGroup]="authFormGroup" (ngSubmit)="login()"
+                        class="login__form">
+                        <label class="login__label">
+                            <tui-input
+                                formControlName="username"
+                                tuiTextFieldLabelOutside>
+                                <span tuiLabel>Логин</span>
+                                <input type="text" tuiTextfieldLegacy
+                                    placeholder="username">
+                            </tui-input>
+                        </label>
+                        <label class="login__label">
+                            <tui-input-password
+                                formControlName="password"
+                                tuiTextFieldLabelOutside>
+                                <span tuiLabel>Пароль</span>
+                                <input type="password" tuiTextfieldLegacy
+                                    tuiTextFieldLabelOutside
+                                    placeholder="password">
+                            </tui-input-password>
+                        </label>
+
+                        <button class="login__button" tuiButton
+                            [disabled]="isFormInvalid || isLoading" size="s">
+                            Войти
+                        </button>
+                    </form>
+                </div>
+
+                <ng-template #register>
+                    <div>
+                        #TODO: ПИДАРАС СДЕЛАЙ СТРАНИЦУ РЕГИСТРАЦИИ, СУКА
+                        И ЕЩЕ СУКА СЛОВАРЬ DETAILS
+                    </div>
+                    <app-register
+                        (setFormMode)="setFormMode($event)"></app-register>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</tui-loader>

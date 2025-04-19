@@ -1,0 +1,39 @@
+<div class="register__wrapper">
+    <h2 class="register__title">Регистрация</h2>
+    <form [formGroup]="registerFormGroup" (ngSubmit)="register()"
+        class="register__form">
+        <label class="register__label">
+            <tui-input
+                formControlName="email"
+                tuiTextFieldLabelOutside>
+                <span tuiLabel>Почта</span>
+                <input type="text" tuiTextfieldLegacy
+                    placeholder="someone@post.domen">
+            </tui-input>
+        </label>
+        <label class="register__label">
+            <tui-input
+                formControlName="username"
+                tuiTextFieldLabelOutside>
+                <span tuiLabel>Логин</span>
+                <input type="text" tuiTextfieldLegacy
+                    placeholder="username">
+            </tui-input>
+        </label>
+        <label class="register__label">
+            <tui-input-password
+                formControlName="password"
+                tuiTextFieldLabelOutside>
+                <span tuiLabel>Пароль</span>
+                <input type="password" tuiTextfieldLegacy
+                    tuiTextFieldLabelOutside
+                    placeholder="password">
+            </tui-input-password>
+        </label>
+
+        <button class="register__button" tuiButton
+            [disabled]="isFormInvalid || isLoading" size="s">
+            Зарегистрироваться
+        </button>
+    </form>
+</div>
