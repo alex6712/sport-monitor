@@ -1,8 +1,7 @@
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface ApiResMessageModel {
-    success: boolean;
-    status: string;
+    code: number;
     message: string;
 }
 
