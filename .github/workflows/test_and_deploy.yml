@@ -1,15 +1,51 @@
-name: Deploy
+name: Test and Deploy
 
 on:
   push:
     branches:
       - master
+      - dev
   pull_request:
     branches:
       - master
 
 jobs:
+  test-clients-management-api:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/clients_management
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies with Poetry
+        run: poetry install
+
+      - name: Set up .env file
+        run: |
+          touch .env
+          echo '${{ secrets.ENV_FILE }}' > .env
+
+      - name: Run tests
+        run: poetry run pytest tests
+
   deploy:
+    needs: test-clients-management-api
+    if: github.ref == 'refs/heads/master'
+
     runs-on: ubuntu-latest
 
     steps:
@@ -38,9 +74,6 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             cd ~/sport_monitor/backend/clients_management
-            set -a
-            source .env
-            set +a
             docker compose down
             docker compose up -d --build
           EOF
