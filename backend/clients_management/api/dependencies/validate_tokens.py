@@ -8,43 +8,15 @@ from fastapi.security import (
 )
 from jose import ExpiredSignatureError, JWTError
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.v1.services import user_service
+from api.dependencies import get_session
 from core.config import Settings, get_settings
 from core.jwt import jwt_decode
 from database.tables.entities import User
+from repositories import UserRepository
 
 settings: Settings = get_settings()
-
-engine: AsyncEngine = create_async_engine(
-    url=settings.DATABASE_URL,
-    echo=False,
-    pool_pre_ping=True,
-)
-AsyncSessionMaker: async_sessionmaker = async_sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
-)
-
-
-async def get_session() -> AsyncSession:
-    """Создает уникальный объект асинхронной сессии запроса.
-
-    Используется для добавления сессии базы данных в маршрут запроса, используя систему зависимости FastAPI.
-
-    Returns
-    -------
-    session : AsyncSession
-        Объект асинхронной сессии запроса.
-    """
-    async with AsyncSessionMaker() as session:
-        yield session
-
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"/{settings.CURRENT_API_URL}/auth/sign_in"
@@ -78,7 +50,7 @@ async def validate_access_token(
     user : User
         Объект пользователя.
     """
-    return await _get_user_from_token(token, session)
+    return await _get_user_from_token(token, UserRepository(session))
 
 
 async def validate_refresh_token(
@@ -102,7 +74,9 @@ async def validate_refresh_token(
     user : User
         Объект пользователя.
     """
-    user = await _get_user_from_token(refresh_token := credentials.credentials, session)
+    user = await _get_user_from_token(
+        refresh_token := credentials.credentials, UserRepository(session)
+    )
 
     if user.refresh_token != refresh_token:
         raise credentials_exception
@@ -110,7 +84,7 @@ async def validate_refresh_token(
     return user
 
 
-async def _get_user_from_token(token: AnyStr, session: AsyncSession) -> User:
+async def _get_user_from_token(token: AnyStr, user_repo: UserRepository) -> User:
     """Функция для получения записи пользователя из базы данных с помощью данных из JWT.
 
     Получает JWT в качестве ввода, декодирует его и проверяет, существует ли пользователь в базе данных.
@@ -120,8 +94,8 @@ async def _get_user_from_token(token: AnyStr, session: AsyncSession) -> User:
     ----------
     token : AnyStr
         JSON Web Token, токен доступа.
-    session : AsyncSession
-        Объект сессии запроса.
+    user_repo : UserRepository
+        Объект доступа к данным пользователя.
 
     Returns
     -------
@@ -140,13 +114,13 @@ async def _get_user_from_token(token: AnyStr, session: AsyncSession) -> User:
     except JWTError:
         raise credentials_exception
 
-    if (user := await user_service.get_user_by_username(session, username)) is None:
+    if (user := await user_repo.get_user_by_username(username)) is None:
         raise credentials_exception
 
     try:
-        await session.commit()
+        await user_repo.session.commit()
     except IntegrityError:
-        await session.rollback()
+        await user_repo.session.rollback()
 
         raise credentials_exception
 

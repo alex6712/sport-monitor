@@ -1,12 +1,17 @@
-# JetBrains Workspace
+# JetBrains workspace
 /.idea
 
-# Virtual Environments
+# Virtual environments
 /.venv
 /venv
 
-# .env
+# .env files
 **.env
+construct_prodenv.ps1
+construct_prodenv.sh
 
 # PyCache
 **/__pycache__
+
+# VSCode workspace
+**/.vscode

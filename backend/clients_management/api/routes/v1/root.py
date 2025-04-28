@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from core.config import Settings, get_settings
-from schemas.responses import AppInfoResponse, StandardResponse
+from schemas.v1.responses import AppInfoResponse, StandardResponse
 
 router = APIRouter(
     tags=["root"],
@@ -26,7 +26,7 @@ async def root():
     response : StandardResponse
         Ответ о корректной работе сервера.
     """
-    return {"message": "API works!"}
+    return StandardResponse(message="API works!")
 
 
 @router.get(
@@ -56,11 +56,11 @@ async def app_info(settings: Annotated[Settings, Depends(get_settings)]):
     response : AppInfoResponse
         Ответ, содержащий информацию о серверной стороне приложения.
     """
-    return {
-        "app_name": settings.APP_NAME,
-        "app_version": settings.APP_VERSION,
-        "app_description": settings.APP_DESCRIPTION,
-        "app_summary": settings.APP_SUMMARY,
-        "admin_name": settings.ADMIN_NAME,
-        "admin_email": settings.ADMIN_EMAIL,
-    }
+    return AppInfoResponse(
+        app_name=settings.APP_NAME,
+        app_version=settings.APP_VERSION,
+        app_description=settings.APP_DESCRIPTION,
+        app_summary=settings.APP_SUMMARY,
+        admin_name=settings.ADMIN_NAME,
+        admin_email=settings.ADMIN_EMAIL,
+    )
