@@ -14,7 +14,7 @@ async def test_sign_up_success(async_client):
     )
 
     assert response.status_code == 201
-    assert response.json()["message"] == "User created successfully."
+    assert response.json()["message"] == "Пользователь создан успешно."
 
 
 @pytest.mark.asyncio

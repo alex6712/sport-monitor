@@ -1,8 +1,23 @@
+# Python cache
 __pycache__/
-*.pyc
 *.pyo
 *.pyd
-.env
+
+# .env files
+construct_prodenv.sh
+
+# Virtual environmnets
 venv/
+.venv/
+
+# Workspaces
 .idea/
+.vscode/
+
+# GIT
 .git/
+*.gitignore
+
+# Tests
+tests/
+pytest.ini
