@@ -47,7 +47,6 @@ export class AuthService {
                     localStorage.setItem('user_name', info.username);
                     localStorage.setItem('access_token', info.access_token);
                     localStorage.setItem('refresh_token', info.refresh_token);
-                    console.log(info);
                 }),
                 catchError((err: Error) => {
                     return throwError(() => err);
@@ -60,7 +59,6 @@ export class AuthService {
             .post<ApiResMessageModel>('auth/sign_up', registerData)
             .pipe(
                 tap((info) => {
-                    console.log(info);
                     return info;
                 }),
                 catchError((err: Error) => {
@@ -92,7 +90,6 @@ export class AuthService {
             .pipe(take(1))
             .subscribe({
                 next: () => {
-                    console.log(123);
                     void this.router.navigate(['']);
                     this.loginSubject.next();
                 },
@@ -103,12 +100,10 @@ export class AuthService {
     }
 
     register(FormData: UserCreate): void {
-        console.log(FormData);
         this.postRegister(FormData)
             .pipe(take(1))
             .subscribe({
                 next: (res) => {
-                    console.log(res);
                     res.code && this.registerSubject.next(RegisterStatus.Login);
                 },
                 error: (error: HttpErrorResponse) => {

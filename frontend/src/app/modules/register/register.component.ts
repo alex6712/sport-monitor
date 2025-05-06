@@ -70,7 +70,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.registerDoneSubscription =
             this.authService.registerDone$.subscribe((formMode: string) => {
-                console.log(formMode);
                 if (formMode === RegisterStatus.Login) {
                     this.alertService
                         .open('Регистрация прошла без ошибок.', {
