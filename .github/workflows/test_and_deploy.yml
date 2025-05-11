@@ -27,12 +27,22 @@ jobs:
           python-version: '3.12'
 
       - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load Poetry cache
+        id: cache-poetry
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            backend/clients_management/.venv
+          key: poetry-${{ hashFiles('backend/clients_management/poetry.lock') }}
 
       - name: Install dependencies with Poetry
-        run: poetry install
+        run: poetry install --no-interaction --no-root
 
       - name: Set up .env file
         run: |
@@ -57,23 +67,26 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Set up .env file
+      - name: Set up .env files
         run: |
           touch ./backend/clients_management/.env
-          echo '${{ secrets.ENV_FILE }}' > ./backend/clients_management/.env
+          echo '${{ secrets.CLIENTS_MANAGEMENT_ENV_FILE }}' > ./backend/clients_management/.env
+          
+          touch ./backend/clients_management/docker.env
+          echo '${{ secrets.CLIENTS_MANAGEMENT_DOCKER_ENV_FILE }}' > ./backend/clients_management/docker.env
 
       - name: Copy project to server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            mkdir -p ~/sport_monitor/backend/clients_management
-          EOF
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ~/sport_monitor"
   
-          rsync -az --delete ./backend/clients_management/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/sport_monitor/backend/clients_management
+          rsync -az --delete ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/sport_monitor
 
       - name: Deploy with Docker Compose
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             cd ~/sport_monitor/backend/clients_management
-            docker compose down
-            docker compose up -d --build
+          
+            docker compose --env-file docker.env down --remove-orphans
+            docker compose --env-file docker.env build --pull
+            docker compose --env-file docker.env up -d --wait
           EOF

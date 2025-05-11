@@ -4,7 +4,7 @@ __pycache__/
 *.pyd
 
 # .env files
-construct_prodenv.sh
+construct_envs.sh
 
 # Virtual environmnets
 venv/

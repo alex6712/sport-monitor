@@ -7,8 +7,8 @@
 
 # .env files
 **.env
-construct_prodenv.ps1
-construct_prodenv.sh
+construct_envs.ps1
+construct_envs.sh
 
 # PyCache
 **/__pycache__

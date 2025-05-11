@@ -15,6 +15,10 @@ tags_metadata = [
         "name": "authorization",
         "description": "Операции **регистрации** и **аутентификации**.",
     },
+    {
+        "name": "clients",
+        "description": "Операции с **клиентами**: _добавление_, _удаление_, _редактирование_.",
+    },
 ]
 
 clients_management = FastAPI(

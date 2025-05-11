@@ -30,6 +30,8 @@ class Client(Base):
     name: Mapped[str] = mapped_column(String(256), nullable=False)
     surname: Mapped[str] = mapped_column(String(256), nullable=False)
     patronymic: Mapped[str] = mapped_column(String(256), nullable=False)
+    email: Mapped[str] = mapped_column(String(256), nullable=True)
+    phone: Mapped[str] = mapped_column(String(32), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
 
     visits: Mapped[List["Visit"]] = relationship("Visit", back_populates="client")
@@ -52,6 +54,8 @@ class Client(Base):
             f"name={self.name!r}, "
             f"surname={self.surname!r}, "
             f"patronymic={self.patronymic!r}, "
+            f"email={self.email!r}, "
+            f"phone={self.phone!r}, "
             f"photo_url={self.photo_url!r}"
             f")>"
         )

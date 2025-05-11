@@ -7,9 +7,9 @@ from pydantic_settings import SettingsConfigDict, BaseSettings
 
 
 class Settings(BaseSettings):
-    """Config project class.
+    """Класс конфигурации проекта.
 
-    Used `pydantic`_ + `python-dotenv`_ to look up application settings described in .env.
+    Использует `pydantic`_ + `python-dotenv`_ для загрузки настроек приложения из .env-файла.
 
     .. _`pydantic`:
         https://docs.pydantic.dev/
@@ -24,49 +24,47 @@ class Settings(BaseSettings):
     Attributes
     ----------
     APP_NAME : str
-        The name of the application.
+        Название приложения.
     APP_VERSION : str
-        The current version of the application.
+        Текущая версия приложения.
     APP_DESCRIPTION : str
-        Full description of the application.
+        Полное описание приложения.
     APP_SUMMARY : str
-        Brief description of the application.
+        Краткое описание приложения.
     ADMIN_NAME : str
-        Name of the person responsible.
+        Имя ответственного лица.
     ADMIN_EMAIL : EmailStr
-        Email address to contact the person in charge.
+        Email для связи с ответственным лицом.
     DEV_MODE : bool
-        Development mode.
-    INITIALIZE_DB : bool
-        Recreate the DB.
+        Режим разработки.
     BACKEND_CORS_ORIGINS : List[str]
-        List of sources for CORS Middleware.
-    DOMAIN : str` | `IPvAnyAddress
-        The IP of the domain where the application is located.
+        Список источников для CORS Middleware.
+    DOMAIN : str | IPvAnyAddress
+        IP домена, на котором расположено приложение.
     BACKEND_PORT : int
-        Application port.
+        Порт приложения.
     DATABASE_USER : str
-        The database user to connect to.
+        Пользователь базы данных для подключения.
     DATABASE_PASSWORD : str
-        User password to connect to the database.
+        Пароль пользователя для подключения к базе данных.
     DATABASE_PORT : int
-        Database port.
+        Порт базы данных.
     CURRENT_API_URL : int
-        Current API version URL.
+        URL текущей версии API.
     DATABASE_NAME : str
-        Database name.
+        Название базы данных.
     DATABASE_URL : PostgresDsn
-        Connection string (link) to the database.
+        Строка подключения (ссылка) к базе данных.
     TEST_DATABASE_URL : str
         Строка подключения к тестовой базе данных.
     JWT_SECRET_KEY : str
-        The secret key to encode the JSON Web Token.
+        Секретный ключ для кодирования JSON Web Token.
     JWT_ALGORITHM : str
-        JWT encoding algorithm.
+        Алгоритм кодирования JWT.
     ACCESS_TOKEN_LIFETIME_MINUTES : int
-        Access token lifetime in minutes.
+        Время жизни access-токена в минутах.
     REFRESH_TOKEN_LIFETIME_DAYS : int
-        Refresh token lifetime in days.
+        Время жизни refresh-токена в днях.
     """
 
     APP_NAME: str
@@ -78,8 +76,6 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: EmailStr
 
     DEV_MODE: bool
-
-    INITIALIZE_DB: bool
 
     BACKEND_CORS_ORIGINS: List[str]
 
