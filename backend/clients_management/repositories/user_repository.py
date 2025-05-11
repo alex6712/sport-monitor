@@ -5,10 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.tables.entities import User
+from repositories.interface import RepositoryInterface
 from schemas.v1.requests import SignUpRequest
 
 
-class UserRepository:
+class UserRepository(RepositoryInterface):
     """Репозиторий пользователя.
 
     Реализация паттерна Репозиторий. Является объектом доступа к данным (DAO).
@@ -32,9 +33,9 @@ class UserRepository:
     """
 
     def __init__(self, session: AsyncSession):
-        self.session: AsyncSession = session
+        super().__init__(session)
 
-    async def get_user_by_id(self, id_: UUID):
+    async def get_user_by_id(self, id_: UUID) -> User:
         """Возвращает модель пользователя по его id.
 
         Parameters
@@ -81,7 +82,7 @@ class UserRepository:
             Новый токен обновления.
         """
         user.refresh_token = refresh_token
-        await self.session.commit()
+        await self.commit()
 
     async def add_user(self, user_info: SignUpRequest):
         """Добавляет в базу данных новую запись о сотруднике.
@@ -92,4 +93,4 @@ class UserRepository:
             Схема объекта пользователя с паролем.
         """
         self.session.add(User(**user_info.model_dump()))
-        await self.session.commit()
+        await self.commit()

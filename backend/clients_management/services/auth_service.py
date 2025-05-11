@@ -3,21 +3,77 @@ from typing import AnyStr, Dict
 
 from fastapi import HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from jose import ExpiredSignatureError, JWTError
 from sqlalchemy.exc import IntegrityError
 
-from core.jwt import create_jwt_pair
+from core.config import Settings, get_settings
+from core.jwt import create_jwt_pair, jwt_decode
 from core.security import hash_, verify
 from database.tables.entities import User
 from repositories import UserRepository
 from schemas.v1.requests import SignUpRequest
 from schemas.v1.responses import TokenResponse, StandardResponse
 
+settings: Settings = get_settings()
+
+credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials.",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
 
 class AuthService:
+    """Сервис аутентификации и авторизации.
+
+    Является сервисным слоем приложения, реализующим бизнес-логику
+    работы с пользователями приложения.
+
+    Осуществляет операции регистрации, аутентификации, обновления и генерации токенов,
+    операции авторизации (валидации токена доступа и токена обновления).
+
+    Attributes
+    ----------
+    user_repo : UserRepository
+        Репозиторий пользователя, слой операций с БД.
+
+    Methods
+    -------
+    sign_in(form_data)
+        Реализует бизнес-логику аутентификации пользователя.
+    sign_up(sign_up_data)
+        Реализует бизнес-логику регистрации пользователя.
+    refresh(user)
+        Реализует бизнес-логику повторной аутентификации пользователя.
+    validate_access_token(access_token)
+        Реализует бизнес-логику авторизации по токену доступа.
+    validate_refresh_token(refresh_token)
+        Реализует бизнес-логику авторизации по токену обновления.
+    _get_jwt_pair(user)
+        Генерирует новую пару JWT.
+    _get_user_from_token(token)
+        Получает запись из репозитория на основе данных из JWT.
+    """
+
     def __init__(self, user_repo: UserRepository):
         self.user_repo: UserRepository = user_repo
 
-    async def sign_in(self, form_data: OAuth2PasswordRequestForm):
+    async def sign_in(self, form_data: OAuth2PasswordRequestForm) -> TokenResponse:
+        """Метод аутентификации.
+
+        Получает данные аутентификации пользователя (имя пользователя, пароль),
+        выполняет аутентификацию и возвращает JWT.
+
+        Parameters
+        ----------
+        form_data : OAuth2PasswordRequestForm
+            Данные аутентификации пользователя.
+
+        Returns
+        -------
+        response : TokenResponse
+            Модель ответа сервера с вложенной парой JWT.
+        """
         user = await self.user_repo.get_user_by_username(form_data.username)
 
         # проверка на существование пользователя и соответствие пароля
@@ -30,7 +86,7 @@ class AuthService:
 
         return TokenResponse(**await self._get_jwt_pair(user), token_type="bearer")
 
-    async def sign_up(self, sign_up_data: SignUpRequest):
+    async def sign_up(self, sign_up_data: SignUpRequest) -> StandardResponse:
         """Метод регистрации.
 
         Получает модель пользователя (с паролем) в качестве ввода и добавляет запись в базу данных.
@@ -50,7 +106,7 @@ class AuthService:
         try:
             await self.user_repo.add_user(sign_up_data)
         except IntegrityError as integrity_error:
-            await self.user_repo.session.rollback()
+            await self.user_repo.rollback()
 
             # Необходимо для тестов, т.к. текст ошибки SQLite отличается от PostgreSQL
             if "sqlite3" in str(integrity_error):
@@ -79,7 +135,7 @@ class AuthService:
             message="Пользователь создан успешно.",
         )
 
-    async def refresh(self, user: User):
+    async def refresh(self, user: User) -> TokenResponse:
         """Метод повторной аутентификации через токен обновления.
 
         Получает ``refresh_token`` в заголовке, проверяет на совпадение в базе данных
@@ -97,6 +153,47 @@ class AuthService:
             Модель ответа сервера с вложенной парой JWT.
         """
         return TokenResponse(**await self._get_jwt_pair(user), token_type="bearer")
+
+    async def validate_access_token(self, access_token: str) -> User:
+        """Метод валидации токена доступа.
+
+        Получает JSON Web Token (JWT) в качестве ввода, декодирует его и проверяет,
+        существует ли пользователь в репозитории. Возвращает модель записи пользователя.
+
+        Parameters
+        ----------
+        access_token : AnyStr
+            JSON Web Token, токен доступа.
+
+        Returns
+        -------
+        user : User
+            Объект пользователя.
+        """
+        return await self._get_user_from_token(access_token)
+
+    async def validate_refresh_token(self, refresh_token: str) -> User:
+        """Метод валидации токена обновления.
+
+        Получает refresh_token пользователя, декодирует его,
+        проверяет на совпадение в репозитории.
+
+        Parameters
+        ----------
+        refresh_token : str
+            JSON Web Token, токен обновления.
+
+        Returns
+        -------
+        user : User
+            Объект пользователя.
+        """
+        user = await self._get_user_from_token(refresh_token)
+
+        if user.refresh_token != refresh_token:
+            raise credentials_exception
+
+        return user
 
     async def _get_jwt_pair(self, user: User) -> Dict[AnyStr, AnyStr]:
         """Метод создания новой пары JWT.
@@ -124,7 +221,7 @@ class AuthService:
         try:
             await self.user_repo.update_refresh_token(user, tokens["refresh_token"])
         except IntegrityError:
-            await self.user_repo.session.rollback()
+            await self.user_repo.rollback()
 
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -132,3 +229,43 @@ class AuthService:
             )
 
         return tokens
+
+    async def _get_user_from_token(self, token: str) -> User:
+        """Метод получения записи пользователя с помощью данных из JWT.
+
+        Получает JWT в качестве ввода, декодирует его и проверяет, существует ли пользователь в репозитории.
+        Возвращает модель записи пользователя.
+
+        Parameters
+        ----------
+        token : str
+            JSON Web Token.
+
+        Returns
+        -------
+        user : User
+            Модель записи пользователя.
+        """
+        try:
+            if (username := jwt_decode(token).get("sub")) is None:
+                raise credentials_exception
+        except ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Signature has expired.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        except JWTError:
+            raise credentials_exception
+
+        if (user := await self.user_repo.get_user_by_username(username)) is None:
+            raise credentials_exception
+
+        try:
+            await self.user_repo.commit()
+        except IntegrityError:
+            await self.user_repo.rollback()
+
+            raise credentials_exception
+
+        return user

@@ -1,1 +1,2 @@
-from .get_auth_service import get_auth_service
+from .auth import get_auth_service
+from .clients import get_clients_service
