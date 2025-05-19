@@ -32,7 +32,7 @@ class ClientRepository(RepositoryInterface):
 
         Returns
         -------
-        clients : List[User]
+        clients : List[Client]
             Модель записи пользователя из базы данных.
         """
         result = await self.session.scalars(select(Client).order_by(Client.name))

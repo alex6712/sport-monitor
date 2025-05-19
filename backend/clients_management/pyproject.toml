@@ -16,6 +16,7 @@ python-jose = {extras = ["cryptography"], version = "^3.4.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pydantic-extra-types = "^2.10.4"
 phonenumbers = "^9.0.5"
+alembic = "^1.15.2"
 
 
 [tool.poetry.group.dev.dependencies]

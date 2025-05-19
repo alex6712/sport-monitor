@@ -17,6 +17,6 @@ class ClientService:
     def __init__(self, client_repo: ClientRepository):
         self.client_repo: ClientRepository = client_repo
 
-    async def clients(self) -> ClientsResponse:
+    async def get_all_clients(self) -> ClientsResponse:
         """"""
         return ClientsResponse(clients=await self.client_repo.get_all_clients())

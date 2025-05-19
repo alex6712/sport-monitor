@@ -35,4 +35,4 @@ async def clients(
     -------
 
     """
-    return await client_service.clients()
+    return await client_service.get_all_clients()
