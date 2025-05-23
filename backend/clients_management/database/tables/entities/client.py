@@ -47,7 +47,7 @@ class Client(Base):
         viewonly=True,
     )
 
-    season_ticket: Mapped["SeasonTicket"] = relationship("SeasonTicker", back_populates="client")
+    season_ticket: Mapped["SeasonTicket"] = relationship("SeasonTicket", back_populates="client")
 
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="client")
 
