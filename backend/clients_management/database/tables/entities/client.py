@@ -7,12 +7,12 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
-from sqlalchemy.types import String, Uuid
+from sqlalchemy.types import String, Uuid, Boolean
 
 from database.tables.base import Base
 
 if TYPE_CHECKING:
-    from database.tables.entities import Visit, Group
+    from database.tables.entities import Visit, Group, SeasonTicket
     from database.tables.junctions import Comment, Relationship
 
 
@@ -30,9 +30,11 @@ class Client(Base):
     name: Mapped[str] = mapped_column(String(256), nullable=False)
     surname: Mapped[str] = mapped_column(String(256), nullable=False)
     patronymic: Mapped[str] = mapped_column(String(256), nullable=False)
+    sex: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     email: Mapped[str] = mapped_column(String(256), nullable=True)
     phone: Mapped[str] = mapped_column(String(32), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
+    season_ticket_id: Mapped[UUID] = mapped_column(Uuid())
 
     visits: Mapped[List["Visit"]] = relationship("Visit", back_populates="client")
 
@@ -45,6 +47,8 @@ class Client(Base):
         viewonly=True,
     )
 
+    season_ticket: Mapped["SeasonTicket"] = relationship("SeasonTicker", back_populates="client")
+
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="client")
 
     def __repr__(self) -> str:
@@ -54,8 +58,10 @@ class Client(Base):
             f"name={self.name!r}, "
             f"surname={self.surname!r}, "
             f"patronymic={self.patronymic!r}, "
+            f"sex={self.sex!r}, "
             f"email={self.email!r}, "
             f"phone={self.phone!r}, "
-            f"photo_url={self.photo_url!r}"
+            f"photo_url={self.photo_url!r}, "
+            f"season_ticket_id={self.season_ticket_id!r}"
             f")>"
         )

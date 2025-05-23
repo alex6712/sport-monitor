@@ -24,15 +24,4 @@ async def clients(
     _: Annotated[User, Depends(validate_access_token)],
     client_service: Annotated[ClientService, Depends(get_clients_service)],
 ):
-    """
-
-    Parameters
-    ----------
-    _
-    client_service
-
-    Returns
-    -------
-
-    """
     return await client_service.get_all_clients()
