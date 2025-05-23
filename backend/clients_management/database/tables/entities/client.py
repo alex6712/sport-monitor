@@ -1,7 +1,7 @@
 from typing import List, TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -12,7 +12,7 @@ from sqlalchemy.types import String, Uuid, Boolean
 from database.tables.base import Base
 
 if TYPE_CHECKING:
-    from database.tables.entities import Visit, Group, SeasonTicket
+    from database.tables.entities import Visit, Group, SeasonTicket, Transaction
     from database.tables.junctions import Comment, Relationship
 
 
@@ -21,6 +21,13 @@ class Client(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name="client_pkey"),
+        ForeignKeyConstraint(
+            ["season_ticket_id"],
+            ["season_ticket.id"],
+            name="client_season_ticket_id_fk",
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
         {
             "comment": "Таблица с записями о клиентах.",
         },
@@ -46,6 +53,8 @@ class Client(Base):
         secondary="relationship",
         viewonly=True,
     )
+
+    transactions: Mapped[List["Transaction"]] = relationship("Transaction", back_populates="client")
 
     season_ticket: Mapped["SeasonTicket"] = relationship("SeasonTicket", back_populates="client")
 

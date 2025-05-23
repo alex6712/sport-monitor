@@ -40,7 +40,7 @@ class Transaction(Base):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
-    client: Mapped["Client"] = relationship("Client", back_populates="visits")
+    client: Mapped["Client"] = relationship("Client", back_populates="transactions")
 
     def __repr__(self) -> str:
         return (
