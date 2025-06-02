@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 sys.path.append(str(Path(__file__).parent.parent))
 
 from core.config import Settings, get_settings
-from database.tables.base import Base
+from app.database.tables.base import Base
 
 config = context.config
 settings: Settings = get_settings()

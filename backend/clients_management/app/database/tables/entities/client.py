@@ -12,8 +12,17 @@ from sqlalchemy.types import String, Uuid, Boolean
 from app.database.tables.base import Base
 
 if TYPE_CHECKING:
-    from app.database.tables.entities import Visit, Group, SeasonTicket, Transaction
-    from app.database.tables.junctions import Comment, Relationship
+    from app.database.tables.entities import (
+        Group,
+        SeasonTicket,
+        Transaction,
+        Violation,
+        Visit,
+    )
+    from app.database.tables.junctions import (
+        Comment,
+        Relationship,
+    )
 
 
 class Client(Base):
@@ -43,8 +52,6 @@ class Client(Base):
     photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
     season_ticket_id: Mapped[UUID] = mapped_column(Uuid())
 
-    visits: Mapped[List["Visit"]] = relationship("Visit", back_populates="client")
-
     relationships: Mapped[List["Relationship"]] = relationship(
         "Relationship", back_populates="client"
     )
@@ -54,13 +61,17 @@ class Client(Base):
         viewonly=True,
     )
 
+    season_ticket: Mapped["SeasonTicket"] = relationship(
+        "SeasonTicket", back_populates="client"
+    )
+
     transactions: Mapped[List["Transaction"]] = relationship(
         "Transaction", back_populates="client"
     )
 
-    season_ticket: Mapped["SeasonTicket"] = relationship(
-        "SeasonTicket", back_populates="client"
-    )
+    violations: Mapped[List["Violation"]] = relationship("Violation", back_populates="client")
+
+    visits: Mapped[List["Visit"]] = relationship("Visit", back_populates="client")
 
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="client")
 
