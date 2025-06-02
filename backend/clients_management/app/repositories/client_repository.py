@@ -30,11 +30,19 @@ class ClientRepository(RepositoryInterface):
     async def get_all_clients(self) -> List[Client]:
         """Возвращает записи всех клиентов в БД.
 
+        Формирует запрос к базе данных на получение списка всех клиентов,
+        отсортированного по фамилии пользователя.
+        Полученный скаляр переводится в built-in структуру `list`.
+
         Returns
         -------
         clients : List[Client]
-            Модель записи пользователя из базы данных.
+            Список записей пользователей из базы данных.
+
+        Notes
+        -----
+        - Список клиентов возвращается в алфавитном порядке.
         """
-        result = await self.session.scalars(select(Client).order_by(Client.name))
+        result = await self.session.scalars(select(Client).order_by(Client.surname))
 
         return list(result.all())

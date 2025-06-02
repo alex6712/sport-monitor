@@ -18,6 +18,7 @@ COPY pyproject.toml poetry.lock* ./
 RUN poetry install --no-interaction --no-ansi --only main
 
 COPY app/ ./app/
+COPY alembic.ini ./
 
 # Stage 2 (копирование файлов и запуск сервиса)
 FROM python:3.12-slim AS runtime
@@ -25,6 +26,7 @@ FROM python:3.12-slim AS runtime
 WORKDIR /app
 
 COPY --from=builder /build/app ./
+COPY --from=builder /build/alembic.ini ../
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
