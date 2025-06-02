@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     )
     from app.database.tables.junctions import (
         Comment,
+        Complaint,
         Relationship,
     )
 
@@ -60,20 +61,21 @@ class Client(Base):
         secondary="relationship",
         viewonly=True,
     )
-
     season_ticket: Mapped["SeasonTicket"] = relationship(
         "SeasonTicket", back_populates="client"
     )
-
     transactions: Mapped[List["Transaction"]] = relationship(
         "Transaction", back_populates="client"
     )
-
-    violations: Mapped[List["Violation"]] = relationship("Violation", back_populates="client")
-
+    violations: Mapped[List["Violation"]] = relationship(
+        "Violation", back_populates="client"
+    )
     visits: Mapped[List["Visit"]] = relationship("Visit", back_populates="client")
 
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="client")
+    complaints: Mapped[List["Complaint"]] = relationship(
+        "Complaint", back_populates="client"
+    )
 
     def __repr__(self) -> str:
         return (

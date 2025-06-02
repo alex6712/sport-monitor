@@ -12,7 +12,7 @@ from sqlalchemy.types import String, Uuid
 from app.database.tables.base import Base
 
 if TYPE_CHECKING:
-    from app.database.tables.junctions import Comment
+    from app.database.tables.junctions import Comment, Complaint
 
 
 class User(Base):
@@ -36,6 +36,9 @@ class User(Base):
     )
 
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="user")
+    complaints: Mapped[List["Complaint"]] = relationship(
+        "Complaint", back_populates="user"
+    )
 
     def __repr__(self) -> str:
         return (
