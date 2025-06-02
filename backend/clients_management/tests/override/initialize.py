@@ -1,7 +1,7 @@
 from asyncpg.exceptions import ConnectionDoesNotExistError
 from sqlalchemy.exc import ProgrammingError
 
-from database import Base
+from app.database.tables.base import Base
 from tests.override import test_engine
 
 
