@@ -52,13 +52,13 @@ async def all_clients(
 
 
 @router.get(
-    "/{id_}",
+    "/{uuid}",
     response_model=ClientsResponse,
     status_code=status.HTTP_200_OK,
     summary="Возвращает информацию о клиенте по его id.",
 )
 async def client_by_id(
-    id_: UUID,
+    uuid: UUID,
     _: Annotated[User, Depends(validate_access_token)],
     client_service: Annotated[ClientService, Depends(get_clients_service)],
 ):
@@ -66,7 +66,7 @@ async def client_by_id(
 
     Parameters
     ----------
-    id_ : int
+    uuid : UUID
         UUID клиента, по которому запрашивается информация.
     _ : User
         Авторизованный пользователь, полученный через JWT-токен.
@@ -82,6 +82,4 @@ async def client_by_id(
     -----
     - Объект пользователя не используется напрямую, но гарантирует проверку авторизации.
     """
-
-    print(id_)
     return await client_service.get_all_clients()

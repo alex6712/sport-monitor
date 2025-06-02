@@ -64,4 +64,4 @@ class GroupModel(_BaseGroupModel):
     - Количество клиентов всегда соответствует полю quantity.
     """
 
-    clients: List[CompactClientModel] = Field()
+    clients: List["CompactClientModel"] = Field()

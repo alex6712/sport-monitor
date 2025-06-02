@@ -7,7 +7,7 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 
 if TYPE_CHECKING:
     from app.schemas.group import CompactGroupModel
-    from schemas.season_ticket import SeasonTicketModel
+    from app.schemas.season_ticket import SeasonTicketModel
 
 
 class _BaseClientModel(BaseModel):
@@ -91,5 +91,5 @@ class ClientModel(_BaseClientModel):
         Полная информация обо всех абонементах клиента.
     """
 
-    groups: List[CompactGroupModel] = Field()
-    season_tickets: List[SeasonTicketModel] = Field()
+    groups: List["CompactGroupModel"] = Field()
+    season_tickets: List["SeasonTicketModel"] = Field()
