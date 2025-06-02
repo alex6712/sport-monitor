@@ -3,7 +3,7 @@ from typing import List
 from pydantic import Field
 
 from .standard import StandardResponse
-from app.schemas.client import Client
+from app.schemas.client import CompactClient
 
 
 class ClientsResponse(StandardResponse):
@@ -14,8 +14,8 @@ class ClientsResponse(StandardResponse):
 
     Attributes
     ----------
-    clients : List[Client]
-        Список объектов клиентов, где каждый элемент соответствует модели Client.
+    clients : List[CompactClient]
+        Список объектов клиентов, где каждый элемент соответствует модели CompactClient.
         Может быть пустым, если клиенты не найдены.
 
     Notes
@@ -24,4 +24,5 @@ class ClientsResponse(StandardResponse):
     - Гарантирует единообразную структуру ответов API
     - Позволяет добавлять метаданные (пагинацию, фильтры) в стандартные поля
     """
-    clients: List[Client] = Field()
+
+    clients: List[CompactClient] = Field()

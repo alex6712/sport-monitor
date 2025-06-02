@@ -27,7 +27,7 @@ class Group(Base):
     )
 
     id: Mapped[UUID] = mapped_column(Uuid(), default=uuid4)
-    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    type: Mapped[str] = mapped_column(String(256), nullable=False)
 
     relationships: Mapped[List["Relationship"]] = relationship(
         "Relationship", back_populates="group"
@@ -42,6 +42,6 @@ class Group(Base):
         return (
             f"<{self.__class__.__name__}("
             f"id={self.id!r}, "
-            f"name={self.name!r}"
+            f"type={self.type!r}"
             f")>"
         )
