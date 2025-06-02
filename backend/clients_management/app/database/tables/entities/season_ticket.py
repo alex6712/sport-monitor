@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -21,16 +21,24 @@ class SeasonTicket(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name="season_ticket_pkey"),
+        ForeignKeyConstraint(
+            ["client_id"],
+            ["client.id"],
+            name="season_ticket_id_fk",
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
         {
             "comment": "Таблица с записями об абонементах клиентов.",
         },
     )
 
     id: Mapped[UUID] = mapped_column(Uuid(), default=uuid4)
+    client_id: Mapped[UUID] = mapped_column(Uuid())
     type: Mapped[str] = mapped_column(String(256))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
-    client: Mapped["Client"] = relationship("Client", back_populates="season_ticket")
+    client: Mapped["Client"] = relationship("Client", back_populates="season_tickets")
 
     def __repr__(self) -> str:
         return (

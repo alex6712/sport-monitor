@@ -31,13 +31,6 @@ class Client(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name="client_pkey"),
-        ForeignKeyConstraint(
-            ["season_ticket_id"],
-            ["season_ticket.id"],
-            name="client_season_ticket_id_fk",
-            onupdate="CASCADE",
-            ondelete="CASCADE",
-        ),
         {
             "comment": "Таблица с записями о клиентах.",
         },
@@ -51,7 +44,6 @@ class Client(Base):
     email: Mapped[str] = mapped_column(String(256), nullable=True)
     phone: Mapped[str] = mapped_column(String(32), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
-    season_ticket_id: Mapped[UUID] = mapped_column(Uuid())
 
     relationships: Mapped[List["Relationship"]] = relationship(
         "Relationship", back_populates="client"
@@ -61,7 +53,7 @@ class Client(Base):
         secondary="relationship",
         viewonly=True,
     )
-    season_ticket: Mapped["SeasonTicket"] = relationship(
+    season_tickets: Mapped[List["SeasonTicket"]] = relationship(
         "SeasonTicket", back_populates="client"
     )
     transactions: Mapped[List["Transaction"]] = relationship(
@@ -87,7 +79,6 @@ class Client(Base):
             f"sex={self.sex!r}, "
             f"email={self.email!r}, "
             f"phone={self.phone!r}, "
-            f"photo_url={self.photo_url!r}, "
-            f"season_ticket_id={self.season_ticket_id!r}"
+            f"photo_url={self.photo_url!r}"
             f")>"
         )

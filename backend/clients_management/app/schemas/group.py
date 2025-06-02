@@ -4,10 +4,10 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from app.schemas.client import CompactClient
+    from app.schemas.client import CompactClientModel
 
 
-class _BaseGroup(BaseModel):
+class _BaseGroupModel(BaseModel):
     """Базовый класс модели группы, содержащий общие поля для всех производных моделей.
 
     Attributes
@@ -26,7 +26,7 @@ class _BaseGroup(BaseModel):
     type: str = Field(examples=["семья"])
 
 
-class CompactGroup(BaseModel):
+class CompactGroupModel(BaseModel):
     """Сокращённая модель группы для отображения в списках и UI-таблицах.
 
     Содержит минимально необходимые данные для идентификации группы и
@@ -46,7 +46,7 @@ class CompactGroup(BaseModel):
     quantity: int = Field(examples=[5])
 
 
-class Group(_BaseGroup):
+class GroupModel(_BaseGroupModel):
     """Полная модель группы с сокращённой информацией о входящих в неё клиентах.
 
     Наследует все поля от `_BaseGroup` и добавляет список клиентов группы
@@ -54,7 +54,7 @@ class Group(_BaseGroup):
 
     Attributes
     ----------
-    clients : List[CompactClient]
+    clients : List[CompactClientModel]
         Список клиентов, входящих в группу. Каждый клиент представлен
         в сокращённом формате CompactClient.
 
@@ -64,4 +64,4 @@ class Group(_BaseGroup):
     - Количество клиентов всегда соответствует полю quantity.
     """
 
-    clients: List[CompactClient] = Field()
+    clients: List[CompactClientModel] = Field()

@@ -6,10 +6,11 @@ from pydantic import BaseModel, Field, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 if TYPE_CHECKING:
-    from app.schemas.group import CompactGroup
+    from app.schemas.group import CompactGroupModel
+    from schemas.season_ticket import SeasonTicketModel
 
 
-class _BaseClient(BaseModel):
+class _BaseClientModel(BaseModel):
     """Базовый класс модели клиента, содержащий общие поля для всех производных моделей.
 
     Attributes
@@ -47,7 +48,7 @@ class _BaseClient(BaseModel):
     photo_url: str = Field(examples=["/photos/aWuTrnX5AGv.jpg"])
 
 
-class CompactClient(_BaseClient):
+class CompactClientModel(_BaseClientModel):
     """Сокращённая модель данных клиента для отображения в списках и UI-таблицах.
 
     Наследует все базовые поля от _BaseClient и добавляет служебную информацию
@@ -55,8 +56,9 @@ class CompactClient(_BaseClient):
 
     Attributes
     ----------
-    season_ticket_type : str
-        Тип абонемента клиента.
+    season_ticket_type : str | None
+        Тип текущего абонемента клиента. Если в данный момент у клиента
+        нет абонемента (просрочен или не был куплен), возвращается None.
     violator : bool
         Флаг наличия нарушений у клиента.
     last_visit : date
@@ -69,12 +71,12 @@ class CompactClient(_BaseClient):
     - Оптимизирована для отображения в таблицах (меньше полей, чем в полной модели).
     """
 
-    season_ticket_type: str = Field(examples=["семейный"])
+    season_ticket_type: str | None = Field(examples=["семейный"])
     violator: bool = Field(examples=[True])
     last_visit: date = Field(examples=["2025-06-02"])
 
 
-class Client(_BaseClient):
+class ClientModel(_BaseClientModel):
     """Модель данных клиента, представляющая сущность из базы данных.
 
     Модель описывает все данные клиента, включая контактную информацию,
@@ -83,7 +85,11 @@ class Client(_BaseClient):
 
     Attributes
     ----------
-
+    groups : List[CompactGroupModel]
+        Список всех групп, в которых состоит клиент. В сокращённом формате.
+    season_tickets : List[SeasonTicketModel]
+        Полная информация обо всех абонементах клиента.
     """
 
-    groups: List[CompactGroup] = Field()
+    groups: List[CompactGroupModel] = Field()
+    season_tickets: List[SeasonTicketModel] = Field()
