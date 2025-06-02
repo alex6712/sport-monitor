@@ -2,7 +2,7 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
 from api.dependencies import get_session
-from core.config import Settings, get_settings
+from core import Settings, get_settings
 from main import clients_management
 from tests.override import override_get_session, override_initialize
 
