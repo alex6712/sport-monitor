@@ -1,13 +1,12 @@
 from datetime import date
-from typing import List, TYPE_CHECKING
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel, Field, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
-if TYPE_CHECKING:
-    from app.schemas.group import CompactGroupModel
-    from app.schemas.season_ticket import SeasonTicketModel
+from app.schemas.group import CompactGroupModel
+from app.schemas.season_ticket import SeasonTicketModel
 
 
 class _BaseClientModel(BaseModel):
@@ -73,7 +72,7 @@ class CompactClientModel(_BaseClientModel):
 
     season_ticket_type: str | None = Field(examples=["семейный"])
     is_violator: bool = Field(examples=[True])
-    last_visit: date = Field(examples=["2025-06-02"])
+    last_visit: date | None = Field(examples=["2025-06-02"])
 
 
 class ClientModel(_BaseClientModel):
@@ -91,5 +90,5 @@ class ClientModel(_BaseClientModel):
         Полная информация обо всех абонементах клиента.
     """
 
-    groups: List["CompactGroupModel"] = Field()
-    season_tickets: List["SeasonTicketModel"] = Field()
+    groups: List[CompactGroupModel] = Field()
+    season_tickets: List[SeasonTicketModel] = Field()

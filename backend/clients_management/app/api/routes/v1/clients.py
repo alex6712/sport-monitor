@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 from app.api.dependencies.services import get_clients_service
 from app.api.dependencies.tokens import validate_access_token
 from app.database.tables.entities import User
-from app.schemas.v1.responses import ClientsResponse
+from app.schemas.v1.responses import ClientsResponse, ClientResponse
 from app.services import ClientService
 
 router = APIRouter(
@@ -53,7 +53,7 @@ async def all_clients(
 
 @router.get(
     "/{uuid}",
-    response_model=ClientsResponse,
+    response_model=ClientResponse,
     status_code=status.HTTP_200_OK,
     summary="Возвращает информацию о клиенте по его id.",
 )
@@ -75,7 +75,7 @@ async def client_by_id(
 
     Returns
     -------
-    response : ClientsResponse
+    response : ClientResponse
         Список всех клиентов в БД.
 
     Notes

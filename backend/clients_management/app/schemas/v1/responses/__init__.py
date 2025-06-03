@@ -1,4 +1,4 @@
 from .app_info import AppInfoResponse
-from .clients import ClientsResponse
+from .client import ClientsResponse, ClientResponse
 from .jwt import TokenResponse
 from .standard import StandardResponse

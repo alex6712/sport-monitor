@@ -26,7 +26,7 @@ class _BaseGroupModel(BaseModel):
     type: str = Field(examples=["семья"])
 
 
-class CompactGroupModel(BaseModel):
+class CompactGroupModel(_BaseGroupModel):
     """Сокращённая модель группы для отображения в списках и UI-таблицах.
 
     Содержит минимально необходимые данные для идентификации группы и

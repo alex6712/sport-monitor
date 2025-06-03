@@ -1,7 +1,9 @@
 from typing import List, TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint
+from pydantic import EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
+from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -10,12 +12,12 @@ from sqlalchemy.orm import (
 from sqlalchemy.types import String, Uuid, Boolean
 
 from app.database.tables.base import Base
+from .season_ticket import SeasonTicket
+from .transaction import Transaction
 
 if TYPE_CHECKING:
     from app.database.tables.entities import (
         Group,
-        SeasonTicket,
-        Transaction,
         Violation,
         Visit,
     )
@@ -41,8 +43,8 @@ class Client(Base):
     surname: Mapped[str] = mapped_column(String(256), nullable=False)
     patronymic: Mapped[str] = mapped_column(String(256), nullable=False)
     sex: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-    email: Mapped[str] = mapped_column(String(256), nullable=True)
-    phone: Mapped[str] = mapped_column(String(32), nullable=False)
+    email: Mapped[EmailStr] = mapped_column(String(256), nullable=True)
+    phone: Mapped[PhoneNumber] = mapped_column(String(32), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
 
     relationships: Mapped[List["Relationship"]] = relationship(
@@ -54,10 +56,14 @@ class Client(Base):
         viewonly=True,
     )
     season_tickets: Mapped[List["SeasonTicket"]] = relationship(
-        "SeasonTicket", back_populates="client"
+        "SeasonTicket",
+        back_populates="client",
+        order_by=SeasonTicket.expires_at,
     )
     transactions: Mapped[List["Transaction"]] = relationship(
-        "Transaction", back_populates="client"
+        "Transaction",
+        back_populates="client",
+        order_by=Transaction.timestamp,
     )
     violations: Mapped[List["Violation"]] = relationship(
         "Violation", back_populates="client"
