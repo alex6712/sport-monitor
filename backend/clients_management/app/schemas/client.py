@@ -59,7 +59,7 @@ class CompactClientModel(_BaseClientModel):
     season_ticket_type : str | None
         Тип текущего абонемента клиента. Если в данный момент у клиента
         нет абонемента (просрочен или не был куплен), возвращается None.
-    violator : bool
+    is_violator : bool
         Флаг наличия нарушений у клиента.
     last_visit : date
         Дата последнего посещения в формате YYYY-MM-DD.
@@ -72,7 +72,7 @@ class CompactClientModel(_BaseClientModel):
     """
 
     season_ticket_type: str | None = Field(examples=["семейный"])
-    violator: bool = Field(examples=[True])
+    is_violator: bool = Field(examples=[True])
     last_visit: date = Field(examples=["2025-06-02"])
 
 
