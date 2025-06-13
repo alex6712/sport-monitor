@@ -37,6 +37,25 @@ async def add_season_ticket(
         SeasonTicketService, Depends(get_season_ticket_service)
     ],
 ):
+    """Добавляет новый абонемент.
+
+    Создаёт новую запись абонемента на основе переданных данных.
+    Требуется авторизация.
+
+    Parameters
+    ----------
+    season_ticket_data : SeasonTicketRequest
+        Данные нового абонемента.
+    _ : User
+        Авторизованный пользователь (через validate_access_token).
+    season_ticket_service : SeasonTicketService
+        Сервис для работы с абонементами.
+
+    Returns
+    -------
+    StandardResponse
+        Сообщение об успешном создании абонемента с кодом 201.
+    """
     return await season_ticket_service.add_season_ticket(season_ticket_data)
 
 
@@ -54,7 +73,35 @@ async def update_season_ticket(
         SeasonTicketService, Depends(get_season_ticket_service)
     ],
 ):
-    return await season_ticket_service.update_season_ticket(season_ticket_id, season_ticket_data)
+    """Обновляет существующий абонемент по UUID.
+
+    Обновляет данные абонемента с указанным идентификатором.
+    Требуется авторизация.
+
+    Parameters
+    ----------
+    season_ticket_id : UUID
+        Уникальный идентификатор абонемента.
+    season_ticket_data : SeasonTicketRequest
+        Новые данные для абонемента.
+    _ : User
+        Авторизованный пользователь (через validate_access_token).
+    season_ticket_service : SeasonTicketService
+        Сервис для работы с абонементами.
+
+    Returns
+    -------
+    StandardResponse
+        Сообщение об успешном обновлении с кодом 200.
+
+    Raises
+    ------
+    HTTPException
+        Возвращается, если абонемент с данным UUID не найден.
+    """
+    return await season_ticket_service.update_season_ticket(
+        season_ticket_id, season_ticket_data
+    )
 
 
 @router.delete(
@@ -63,11 +110,35 @@ async def update_season_ticket(
     status_code=status.HTTP_200_OK,
     summary="Удаляет запись об абонементе.",
 )
-async def update_season_ticket(
+async def delete_season_ticket(
     season_ticket_id: Annotated[UUID, Path()],
     _: Annotated[User, Depends(validate_access_token)],
     season_ticket_service: Annotated[
         SeasonTicketService, Depends(get_season_ticket_service)
     ],
 ):
+    """Удаляет абонемент по UUID.
+
+    Выполняет удаление записи абонемента из базы данных.
+    Требуется авторизация.
+
+    Parameters
+    ----------
+    season_ticket_id : UUID
+        Уникальный идентификатор абонемента.
+    _ : User
+        Авторизованный пользователь (через validate_access_token).
+    season_ticket_service : SeasonTicketService
+        Сервис для работы с абонементами.
+
+    Returns
+    -------
+    StandardResponse
+        Сообщение об успешном удалении с кодом 200.
+
+    Raises
+    ------
+    HTTPException
+        Возвращается, если абонемент с данным UUID не найден.
+    """
     return await season_ticket_service.delete_season_ticket(season_ticket_id)
