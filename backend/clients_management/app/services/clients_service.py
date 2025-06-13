@@ -10,7 +10,7 @@ from app.repositories import ClientRepository
 from app.schemas.client import CompactClientModel, ClientModel
 from app.schemas.group import CompactGroupModel
 from app.schemas.season_ticket import SeasonTicketModel
-from app.schemas.v1.requests import AddClientRequest
+from app.schemas.v1.requests import ClientRequest
 from app.schemas.v1.responses import (
     ClientResponse,
     ClientsResponse,
@@ -86,7 +86,7 @@ class ClientService:
 
         return ClientsResponse(clients=clients)
 
-    async def get_client_by_id(self, uuid: UUID) -> ClientResponse:
+    async def get_client_by_id(self, client_id: UUID) -> ClientResponse:
         """Получить информацию о клиенте по его UUID.
 
         Асинхронный метод, который возвращает полную информацию о клиенте,
@@ -94,7 +94,7 @@ class ClientService:
 
         Parameters
         ----------
-        uuid : UUID
+        client_id : UUID
             Уникальный идентификатор клиента, по которому осуществляется поиск.
 
         Returns
@@ -107,7 +107,7 @@ class ClientService:
         HTTPException
             - 404 NOT_FOUND: если клиент с указанным UUID не найден в репозитории.
         """
-        client_record = await self.client_repo.get_client_by_id(uuid)
+        client_record = await self.client_repo.get_client_by_id(client_id)
 
         if client_record is None:
             raise HTTPException(
@@ -155,7 +155,7 @@ class ClientService:
 
         return ClientResponse(client=client)
 
-    async def add_client(self, client_data: AddClientRequest) -> StandardResponse:
+    async def add_client(self, client_data: ClientRequest) -> StandardResponse:
         """Добавляет нового клиента в базу данных.
 
         Пытается создать новую запись клиента на основе переданных данных.
@@ -164,7 +164,7 @@ class ClientService:
 
         Parameters
         ----------
-        client_data : AddClientRequest
+        client_data : ClientRequest
             Данные для создания нового клиента. Включают поля, необходимые для добавления клиента
             (например, имя, email и т.д.).
 
@@ -206,4 +206,71 @@ class ClientService:
         return StandardResponse(
             code=status.HTTP_201_CREATED,
             message="Клиент создан успешно.",
+        )
+
+    async def update_client(
+        self, client_id: UUID, client_data: ClientRequest
+    ) -> StandardResponse:
+        """Обновляет данные существующего клиента по его UUID.
+
+        Получает текущую запись клиента из базы данных и обновляет её на основе переданных данных.
+        Если клиент с указанным UUID не найден, возбуждает исключение.
+
+        Parameters
+        ----------
+        client_id : UUID
+            Уникальный идентификатор клиента, чьи данные необходимо обновить.
+        client_data : ClientRequest
+            Объект, содержащий новые значения полей клиента.
+
+        Returns
+        -------
+        StandardResponse
+            Ответ с кодом 200 и сообщением об успешном обновлении.
+
+        Raises
+        ------
+        HTTPException
+            - 404 Not Found: если клиент с указанным UUID не найден.
+            - 409 Conflict: если нарушено условие целостности.
+            - 500 Internal Server Error: при неопределённом поведении.
+
+        Примечания
+        ----------
+        - Использует `get_client_by_id()` для получения текущих данных клиента.
+        - Все поля из `client_data` переносятся в объект клиента через `setattr`.
+        - Транзакция сохраняется вызовом `commit()` в `client_repo`.
+        """
+        client_record = await self.client_repo.get_client_by_id(client_id)
+
+        if client_record is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Клиент с таким uuid не найден.",
+            )
+
+        for key, value in client_data.model_dump().items():
+            setattr(client_record, key, value)
+
+        try:
+            await self.client_repo.commit()
+        except IntegrityError as integrity_error:
+            await self.client_repo.rollback()
+
+            if result := re.search(r'"\((.*)\)=\((.*)\)"', str(integrity_error.orig)):
+                column, value = result.groups()
+
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f'Client with {column}="{value}" already exists!',
+                )
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Неизвестная ошибка.",
+            )
+
+        return StandardResponse(
+            code=status.HTTP_200_OK,
+            message="Данные о клиенте успешно обновлены.",
         )

@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
-class AddClientRequest(BaseModel):
+class ClientRequest(BaseModel):
     """Схема запроса на создание клиента.
 
     Используется в качестве схемы представления запроса на создание клиента.
@@ -17,11 +17,11 @@ class AddClientRequest(BaseModel):
         Отчество клиента.
     sex : bool
         Пол клиента.
-    email : EmailStr
+    email : EmailStr | None
         Электронная почта клиента. Проходит строгую валидацию формата email.
     phone : PhoneNumber
         Номер телефона в международном формате E.164. Автоматически форматируется.
-    photo_url : str
+    photo_url : str | None
         Путь к фотографии клиента. Может быть относительным (для локальных файлов)
         или абсолютным URL.
     """
