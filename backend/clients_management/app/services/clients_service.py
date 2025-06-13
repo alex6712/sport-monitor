@@ -187,6 +187,7 @@ class ClientService:
         """
         try:
             await self.client_repo.add_client(client_data)
+            await self.client_repo.commit()
         except IntegrityError as integrity_error:
             await self.client_repo.rollback()
 
@@ -235,8 +236,8 @@ class ClientService:
             - 409 Conflict: если нарушено условие целостности.
             - 500 Internal Server Error: при неопределённом поведении.
 
-        Примечания
-        ----------
+        Notes
+        -----
         - Использует `get_client_by_id()` для получения текущих данных клиента.
         - Все поля из `client_data` переносятся в объект клиента через `setattr`.
         - Транзакция сохраняется вызовом `commit()` в `client_repo`.
@@ -273,4 +274,47 @@ class ClientService:
         return StandardResponse(
             code=status.HTTP_200_OK,
             message="Данные о клиенте успешно обновлены.",
+        )
+
+    async def delete_client(self, client_id: UUID) -> StandardResponse:
+        """Удаляет клиента из базы данных по UUID.
+
+        Проверяет наличие клиента по указанному UUID. Если клиент найден — удаляет его
+        и коммитит изменения в базу данных. В противном случае выбрасывает исключение.
+
+        Parameters
+        ----------
+        client_id : UUID
+            Уникальный идентификатор клиента, которого нужно удалить.
+
+        Returns
+        -------
+        StandardResponse
+            Ответ с кодом 200 и сообщением об успешном удалении клиента.
+
+        Raises
+        ------
+        HTTPException
+            - 404 Not Found: если клиент не найден.
+
+        Notes
+        -----
+        - Использует метод `get_client_by_id()` из репозитория.
+        - После удаления вызывает `commit()` для сохранения изменений.
+        """
+
+        client = await self.client_repo.get_client_by_id(client_id)
+
+        if client is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Клиент с таким UUID не найден.",
+            )
+
+        await self.client_repo.delete_client(client)
+        await self.client_repo.commit()
+
+        return StandardResponse(
+            code=status.HTTP_200_OK,
+            message="Клиент успешно удалён.",
         )

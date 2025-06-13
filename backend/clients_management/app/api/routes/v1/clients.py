@@ -146,7 +146,7 @@ async def add_client(
     summary="Обновляет информацию о клиенте.",
 )
 async def update_client(
-    client_id: Annotated[UUID, Path()],
+    client_id: Annotated[UUID, Path(description="UUID клиента для обновления")],
     client_data: Annotated[ClientRequest, Body()],
     _: Annotated[User, Depends(validate_access_token)],
     client_service: Annotated[ClientService, Depends(get_clients_service)],
@@ -179,9 +179,44 @@ async def update_client(
         - 400 Bad Request: если данные некорректны или недостаточны.
         - 409 Conflict: при нарушении уникальных ограничений (например, email уже занят).
 
-    Примечания
-    ----------
+    Notes
+    -----
     - Требуется авторизация.
     - Возвращает HTTP статус 200 OK при успешном обновлении.
     """
     return await client_service.update_client(client_id, client_data)
+
+
+@router.delete(
+    "/{client_id}",
+    response_model=StandardResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Удаляет клиента по UUID.",
+)
+async def delete_client(
+    client_id: Annotated[UUID, Path(description="UUID клиента для удаления")],
+    _: Annotated[User, Depends(validate_access_token)],
+    client_service: Annotated[ClientService, Depends(get_clients_service)],
+):
+    """Удаляет клиента из базы данных по идентификатору.
+
+    Parameters
+    ----------
+    client_id : UUID
+        Уникальный идентификатор клиента, которого нужно удалить.
+    _ : User
+        Авторизованный пользователь. Проверяется через access токен.
+    client_service : ClientService
+        Сервис для управления клиентами.
+
+    Returns
+    -------
+    StandardResponse
+        Ответ с кодом 200 и сообщением об успешном удалении.
+
+    Raises
+    ------
+    HTTPException
+        - 404 Not Found: если клиент не найден.
+    """
+    return await client_service.delete_client(client_id)

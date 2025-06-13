@@ -85,4 +85,21 @@ class ClientRepository(RepositoryInterface):
             Объект с данными нового клиента. Должен быть совместим с моделью `Client`.
         """
         self.session.add(Client(**client_data.model_dump()))
-        await self.commit()
+
+    async def delete_client(self, client: Client):
+        """Помечает объект клиента для удаления из базы данных.
+
+        Удаляет объект клиента из текущей сессии SQLAlchemy.
+        Окончательное удаление происходит после вызова `commit()`.
+
+        Parameters
+        ----------
+        client : Client
+            Объект клиента, который необходимо удалить.
+
+        Notes
+        -----
+        - Метод не вызывает commit — вызывающий код должен зафиксировать изменения.
+        - Удаление происходит асинхронно.
+        """
+        await self.session.delete(client)
