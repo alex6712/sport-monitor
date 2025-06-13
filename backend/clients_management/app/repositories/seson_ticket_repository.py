@@ -32,3 +32,6 @@ class SeasonTicketRepository(RepositoryInterface):
 
     async def add_season_ticket(self, season_ticket_data: SeasonTicketRequest):
         self.session.add(SeasonTicket(**season_ticket_data.model_dump()))
+
+    async def delete_season_ticket(self, season_ticket: SeasonTicket):
+        await self.session.delete(season_ticket)

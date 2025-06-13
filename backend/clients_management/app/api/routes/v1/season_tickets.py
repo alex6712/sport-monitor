@@ -55,3 +55,19 @@ async def update_season_ticket(
     ],
 ):
     return await season_ticket_service.update_season_ticket(season_ticket_id, season_ticket_data)
+
+
+@router.delete(
+    "/{season_ticket_id}",
+    response_model=StandardResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Удаляет запись об абонементе.",
+)
+async def update_season_ticket(
+    season_ticket_id: Annotated[UUID, Path()],
+    _: Annotated[User, Depends(validate_access_token)],
+    season_ticket_service: Annotated[
+        SeasonTicketService, Depends(get_season_ticket_service)
+    ],
+):
+    return await season_ticket_service.delete_season_ticket(season_ticket_id)

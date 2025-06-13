@@ -72,3 +72,20 @@ class SeasonTicketService:
             code=status.HTTP_200_OK,
             message="Данные об абонементе успешно обновлены.",
         )
+
+    async def delete_season_ticket(self, season_ticket_id: UUID) -> StandardResponse:
+        season_ticket = await self.season_ticket_repo.get_season_ticket_by_id(season_ticket_id)
+
+        if season_ticket is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Абонемент с таким UUID не найден.",
+            )
+
+        await self.season_ticket_repo.delete_season_ticket(season_ticket)
+        await self.season_ticket_repo.commit()
+
+        return StandardResponse(
+            code=status.HTTP_200_OK,
+            message="Абонемент успешно удалён.",
+        )
