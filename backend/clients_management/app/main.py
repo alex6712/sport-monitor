@@ -19,6 +19,10 @@ tags_metadata = [
         "name": "clients",
         "description": "Операции с **клиентами**: _добавление_, _удаление_, _редактирование_.",
     },
+    {
+        "name": "season_tickets",
+        "description": "Операции с **абонементами**: _добавление_, _удаление_, _редактирование_.",
+    },
 ]
 
 clients_management = FastAPI(

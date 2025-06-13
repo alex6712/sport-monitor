@@ -1,2 +1,3 @@
 from .client_repository import ClientRepository
+from .seson_ticket_repository import SeasonTicketRepository
 from .user_repository import UserRepository
