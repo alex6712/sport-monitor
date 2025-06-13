@@ -136,7 +136,7 @@ class ClientService:
                 SeasonTicketModel(
                     id=season_ticket.id,
                     type=season_ticket.type,
-                    expires_at=season_ticket.expires_at,
+                    expires_at=str(season_ticket.expires_at),
                 )
             )
 

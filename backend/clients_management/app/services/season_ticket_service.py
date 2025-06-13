@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
@@ -38,4 +40,35 @@ class SeasonTicketService:
         return StandardResponse(
             code=status.HTTP_201_CREATED,
             message="Абонемент успешно добавлен.",
+        )
+
+    async def update_season_ticket(
+        self,
+        season_ticket_id: UUID,
+        season_ticket_data: SeasonTicketRequest,
+    ) -> StandardResponse:
+        season_ticket_record = await self.season_ticket_repo.get_season_ticket_by_id(season_ticket_id)
+
+        if season_ticket_record is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Абонемент с таким uuid не найден.",
+            )
+
+        for key, value in season_ticket_data.model_dump().items():
+            setattr(season_ticket_record, key, value)
+
+        try:
+            await self.season_ticket_repo.commit()
+        except Exception as _:
+            await self.season_ticket_repo.rollback()
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Неизвестная ошибка.",
+            )
+
+        return StandardResponse(
+            code=status.HTTP_200_OK,
+            message="Данные об абонементе успешно обновлены.",
         )
