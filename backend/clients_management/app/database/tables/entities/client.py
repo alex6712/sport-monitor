@@ -45,7 +45,7 @@ class Client(Base):
     sex: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     email: Mapped[EmailStr] = mapped_column(String(256), nullable=True)
     phone: Mapped[PhoneNumber] = mapped_column(String(32), nullable=False)
-    photo_url: Mapped[str] = mapped_column(String(256), nullable=False)
+    photo_url: Mapped[str] = mapped_column(String(256), nullable=True)
 
     relationships: Mapped[List["Relationship"]] = relationship(
         "Relationship", back_populates="client"

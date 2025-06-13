@@ -1,10 +1,12 @@
 from typing import List
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.tables.entities import Client
 from app.repositories.interface import RepositoryInterface
+from app.schemas.v1.requests import AddClientRequest
 
 
 class ClientRepository(RepositoryInterface):
@@ -46,3 +48,41 @@ class ClientRepository(RepositoryInterface):
         result = await self.session.scalars(select(Client).order_by(Client.surname))
 
         return list(result.all())
+
+    async def get_client_by_id(self, uuid: UUID) -> Client:
+        """Асинхронно получить объект клиента по его UUID.
+
+        Выполняет запрос к базе данных для поиска клиента с указанным идентификатором.
+        Использует SQLAlchemy для асинхронного выполнения запроса.
+
+        Parameters
+        ----------
+        uuid : UUID
+            Уникальный идентификатор клиента, который необходимо найти.
+
+        Returns
+        -------
+        Client | None
+            Объект модели Client, если клиент найден.
+            None, если клиент с указанным UUID не существует в базе данных.
+
+        Notes
+        -----
+        - Метод не вызывает исключений при отсутствии клиента, просто возвращает None
+        - Для работы метода требуется активная асинхронная сессия SQLAlchemy (self.session)
+        """
+        return await self.session.scalar(select(Client).where(Client.id == uuid))
+
+    async def add_client(self, client_data: AddClientRequest):
+        """Добавляет нового клиента в сессию базы данных.
+
+        Создаёт объект клиента на основе входных данных и добавляет его в текущую сессию SQLAlchemy.
+        Коммит выполняется отдельно, после вызова этого метода.
+
+        Parameters
+        ----------
+        client_data : AddClientRequest
+            Объект с данными нового клиента. Должен быть совместим с моделью `Client`.
+        """
+        self.session.add(Client(**client_data.model_dump()))
+        await self.commit()

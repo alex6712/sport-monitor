@@ -1,8 +1,21 @@
 import asyncio
+import re
+from typing import List
+from uuid import UUID
+
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 
 from app.repositories import ClientRepository
-from app.schemas.client import CompactClientModel
-from app.schemas.v1.responses import ClientsResponse
+from app.schemas.client import CompactClientModel, ClientModel
+from app.schemas.group import CompactGroupModel
+from app.schemas.season_ticket import SeasonTicketModel
+from app.schemas.v1.requests import AddClientRequest
+from app.schemas.v1.responses import (
+    ClientResponse,
+    ClientsResponse,
+    StandardResponse,
+)
 
 
 class ClientService:
@@ -61,6 +74,7 @@ class ClientService:
                     name=client.name,
                     surname=client.surname,
                     patronymic=client.patronymic,
+                    sex=client.sex,
                     email=client.email,
                     phone=client.phone,
                     photo_url=client.photo_url,
@@ -71,3 +85,125 @@ class ClientService:
             )
 
         return ClientsResponse(clients=clients)
+
+    async def get_client_by_id(self, uuid: UUID) -> ClientResponse:
+        """Получить информацию о клиенте по его UUID.
+
+        Асинхронный метод, который возвращает полную информацию о клиенте,
+        включая данные о группах и абонементах, в формате ClientResponse.
+
+        Parameters
+        ----------
+        uuid : UUID
+            Уникальный идентификатор клиента, по которому осуществляется поиск.
+
+        Returns
+        -------
+        ClientResponse
+            Объект ответа, содержащий модель клиента со всей сопутствующей информацией.
+
+        Raises
+        -------
+        HTTPException
+            - 404 NOT_FOUND: если клиент с указанным UUID не найден в репозитории.
+        """
+        client_record = await self.client_repo.get_client_by_id(uuid)
+
+        if client_record is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Клиент с таким uuid не найден.",
+            )
+
+        group_records, season_ticket_records = await asyncio.gather(
+            client_record.awaitable_attrs.groups,
+            client_record.awaitable_attrs.season_tickets,
+        )
+
+        groups: List[CompactGroupModel] = list()
+        for group in group_records:
+            groups.append(
+                CompactGroupModel(
+                    id=group.id,
+                    type=group.type,
+                    quantity=len(await group.awaitable_attrs.clients),
+                )
+            )
+
+        season_tickets: List[SeasonTicketModel] = list()
+        for season_ticket in season_ticket_records:
+            season_tickets.append(
+                SeasonTicketModel(
+                    id=season_ticket.id,
+                    type=season_ticket.type,
+                    expires_at=season_ticket.expires_at,
+                )
+            )
+
+        client = ClientModel(
+            id=client_record.id,
+            name=client_record.name,
+            surname=client_record.surname,
+            patronymic=client_record.patronymic,
+            sex=client_record.sex,
+            email=client_record.email,
+            phone=client_record.phone,
+            photo_url=client_record.photo_url,
+            groups=groups,
+            season_tickets=season_tickets,
+        )
+
+        return ClientResponse(client=client)
+
+    async def add_client(self, client_data: AddClientRequest) -> StandardResponse:
+        """Добавляет нового клиента в базу данных.
+
+        Пытается создать новую запись клиента на основе переданных данных.
+        В случае нарушения ограничений целостности (например, дублирующее значение уникального поля)
+        возвращает соответствующую ошибку.
+
+        Parameters
+        ----------
+        client_data : AddClientRequest
+            Данные для создания нового клиента. Включают поля, необходимые для добавления клиента
+            (например, имя, email и т.д.).
+
+        Returns
+        -------
+        StandardResponse
+            Объект стандартного ответа с кодом 201 и сообщением об успешном создании клиента.
+
+        Raises
+        ------
+        HTTPException
+            - 409 Conflict: если клиент с такими уникальными данными уже существует.
+            - 400 Bad Request: если в запросе недостаточно данных для создания клиента.
+
+        Notes
+        -----
+        - Использует `client_repo.add_client()` для сохранения клиента.
+        - В случае ошибки вызывает `client_repo.rollback()`.
+        - Производит парсинг сообщения об ошибке базы данных для извлечения конфликтующего столбца и значения.
+        """
+        try:
+            await self.client_repo.add_client(client_data)
+        except IntegrityError as integrity_error:
+            await self.client_repo.rollback()
+
+            if result := re.search(r'"\((.*)\)=\((.*)\)"', str(integrity_error.orig)):
+                column, value = result.groups()
+
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f'User with {column}="{value}" already exists!',
+                )
+
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Not enough data in request.",
+            )
+
+        return StandardResponse(
+            code=status.HTTP_201_CREATED,
+            message="Клиент создан успешно.",
+        )

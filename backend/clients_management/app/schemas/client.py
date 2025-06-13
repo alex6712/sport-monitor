@@ -22,6 +22,8 @@ class _BaseClientModel(BaseModel):
         Фамилия клиента.
     patronymic : str
         Отчество клиента.
+    sex : bool
+        Пол клиента.
     email : EmailStr
         Электронная почта клиента. Проходит строгую валидацию формата email.
     phone : PhoneNumber
@@ -32,6 +34,7 @@ class _BaseClientModel(BaseModel):
 
     Notes
     -----
+    - Значение True в атрибуте `sex` означает мужской пол, False - женский.
     - Все строковые поля автоматически триммируются (удаляются пробелы по краям).
     - Для email используется валидация через EmailStr (должен содержать @ и домен).
     - PhoneNumber автоматически нормализует номер (удаляет пробелы, скобки и т.д.).
@@ -42,9 +45,10 @@ class _BaseClientModel(BaseModel):
     name: str = Field(examples=["Пётр"])
     surname: str = Field(examples=["Семёнов"])
     patronymic: str = Field(examples=["Олегович"])
-    email: EmailStr = Field(examples=["petr.semyonov@mail.ru"])
+    sex: bool = Field(examples=[True])
+    email: EmailStr | None = Field(examples=["petr.semyonov@mail.ru"])
     phone: PhoneNumber = Field(examples=["+7 999 138-21-29"])
-    photo_url: str = Field(examples=["/photos/aWuTrnX5AGv.jpg"])
+    photo_url: str | None = Field(examples=["/photos/aWuTrnX5AGv.jpg"])
 
 
 class CompactClientModel(_BaseClientModel):
