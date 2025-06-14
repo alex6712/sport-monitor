@@ -1,0 +1,40 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="clientform">
+    <tui-input formControlName="name">Имя*</tui-input>
+    <tui-input formControlName="surname">Фамилия*</tui-input>
+    <tui-input formControlName="patronymic">Отчество*</tui-input>
+
+    <app-select-sex
+        formControlName="sex"
+        [options]="sexOptions"></app-select-sex>
+
+    <tui-input formControlName="email">Email</tui-input>
+    <tui-input formControlName="phone">Телефон*</tui-input>
+    <input type="file" formControlName="photo_url" />
+
+    <form class="clientform__season-tickets"
+        [formGroup]="form.controls.season_ticket">
+        <h2>Абонементы</h2>
+        <tui-input formControlName="type">Название*</tui-input>
+        <tui-input formControlName="expires_at">Дата</tui-input>
+    </form>
+
+    <tui-input formControlName="relationships">Связи</tui-input>
+    <tui-input formControlName="comments">Комментарии</tui-input>
+
+    <app-select-sex
+        formControlName="is_violator"
+        [options]="violatorOptions"></app-select-sex>
+
+    <app-date-picker
+        [settedTime]="last_visit_day"
+        tuiTextfieldSize="s"
+        formControlName="last_visit_day"
+        class="tui-space_bottom-1">
+    </app-date-picker>
+
+    <div class="buttons">
+        <button tuiButton type="button" (click)="cancel()">Отмена</button>
+        <button tuiButton type="submit"
+            [disabled]="form.invalid">Сохранить</button>
+    </div>
+</form>

@@ -13,7 +13,7 @@ import {
     RegisterStatusOption,
     UserLogin,
 } from '../../state/auth/auth.model';
-import { TuiAlertService, TuiIcon, TuiLabel, TuiLoader } from '@taiga-ui/core';
+import { TuiIcon, TuiLabel, TuiLoader } from '@taiga-ui/core';
 import { take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { RegisterComponent } from '../register/register.component';
@@ -55,7 +55,6 @@ export class LoginComponent implements OnInit {
         private authService: AuthService,
         private route: ActivatedRoute,
         private cdr: ChangeDetectorRef,
-        private alertService: TuiAlertService,
     ) {}
 
     ngOnInit(): void {
@@ -68,7 +67,6 @@ export class LoginComponent implements OnInit {
     }
 
     login(): void {
-        console.log(123);
         this.isLoading = true;
         this.cdr.detectChanges();
         this.authService.login(this.authFormGroup.value as UserLogin);

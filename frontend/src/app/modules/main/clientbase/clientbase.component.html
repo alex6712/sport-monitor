@@ -1,0 +1,99 @@
+<div class="clientbase">
+    <div class="clientbase__container">
+        <div class="clientbase__search">
+            <input type="text" class="clientbase__search-input"
+                placeholder="Введите ID или имя клиента">
+
+            <button class="clientbase__search-button">
+                Найти
+            </button>
+
+            <button class="clientbase__search-button"
+                (click)="showDialog()">
+                Добавить клиента
+            </button>
+        </div>
+
+        <div class="clientbase__table" *ngIf="isClients">
+            <div class="clientbase__table-top">
+                <div class="clientbase__table-cell">
+                    ID
+                </div>
+                <div class="clientbase__table-cell">
+                    Фото
+                </div>
+                <div class="clientbase__table-cell">
+                    ФИО
+                </div>
+                <div class="clientbase__table-cell">
+                    Почта
+                </div>
+                <div class="clientbase__table-cell">
+                    Телефон
+                </div>
+                <div class="clientbase__table-cell">
+                    Абонемент
+                </div>
+                <div class="clientbase__table-cell">
+                    Статус
+                </div>
+                <div class="clientbase__table-cell">
+                    Последнее посещение
+                </div>
+                <div class="clientbase__table-cell">
+                    Карточка
+                </div>
+            </div>
+
+            <div class="clientbase__table-item"
+                *ngFor="let client of clients; index as idx">
+                <div class="clientbase__table-cell">
+                    <!-- {{client.id}} -->
+                </div>
+                <div class="clientbase__table-cell">
+                    <!-- {{client.photo_url}} -->
+                    <img [src]="client.photo_url" alt="photo">
+                </div>
+                <div class="clientbase__table-cell">
+                    {{client.surname || ''}} {{client.name || ''}}
+                    {{client.patronymic || ''}}
+                </div>
+                <div class="clientbase__table-cell">
+                    {{client.email || '-'}}
+                </div>
+                <div class="clientbase__table-cell">
+                    {{client.phone || '-'}}
+                </div>
+                <div class="clientbase__table-cell">
+                    {{client.season_ticket_type ||
+                    '-'}}
+                </div>
+                <div class="clientbase__table-cell">
+                    {{client.is_violator ? 'Не допущен' : 'Допущен'}}
+                </div>
+                <div class="clientbase__table-cell">
+                    {{client.last_visit || '-'}}
+                </div>
+                <div class="clientbase__table-cell">
+                    <a class="client__table-open" [routerLink]="['']">
+                        Открыть
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="clientbase__pagination" *ngIf="clients.length > 8">
+            <div class="clientbase__pagination-item">Назад</div>
+            <div class="clientbase__pagination-item">1</div>
+            <div class="clientbase__pagination-item">2</div>
+            <div class="clientbase__pagination-item">3</div>
+            <div class="clientbase__pagination-item">...</div>
+            <div class="clientbase__pagination-item">10</div>
+            <div class="clientbase__pagination-item">Вперед</div>
+        </div>
+
+        <div class="empty__response" *ngIf="!isClients">
+            Клиентов не найдено!
+        </div>
+    </div>
+</div>
