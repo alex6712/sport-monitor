@@ -273,10 +273,7 @@ class ClientService:
                 detail="Неизвестная ошибка.",
             )
 
-        return StandardResponse(
-            code=status.HTTP_200_OK,
-            message="Данные о клиенте успешно обновлены.",
-        )
+        return StandardResponse(message="Данные о клиенте успешно обновлены.")
 
     async def delete_client(self, client_id: UUID) -> StandardResponse:
         """Удаляет клиента из базы данных по UUID.
@@ -316,7 +313,4 @@ class ClientService:
         await self.client_repo.delete_client(client)
         await self.client_repo.commit()
 
-        return StandardResponse(
-            code=status.HTTP_200_OK,
-            message="Клиент успешно удалён.",
-        )
+        return StandardResponse(message="Клиент успешно удалён.")

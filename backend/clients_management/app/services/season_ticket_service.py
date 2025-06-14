@@ -70,11 +70,6 @@ class SeasonTicketService:
                 detail=f"Клиент с id={season_ticket_data.client_id} не найден!",
             )
 
-        print(CreatedResponse(
-            message="Абонемент успешно добавлен.",
-            id=season_ticket.id,
-        ))
-
         return CreatedResponse(
             message="Абонемент успешно добавлен.",
             id=season_ticket.id,
@@ -132,10 +127,7 @@ class SeasonTicketService:
                 detail="Неизвестная ошибка.",
             )
 
-        return StandardResponse(
-            code=status.HTTP_200_OK,
-            message="Данные об абонементе успешно обновлены.",
-        )
+        return StandardResponse(message="Данные об абонементе успешно обновлены.")
 
     async def delete_season_ticket(self, season_ticket_id: UUID) -> StandardResponse:
         """Удаляет абонемент по UUID.
@@ -172,7 +164,4 @@ class SeasonTicketService:
         await self.season_ticket_repo.delete_season_ticket(season_ticket)
         await self.season_ticket_repo.commit()
 
-        return StandardResponse(
-            code=status.HTTP_200_OK,
-            message="Абонемент успешно удалён.",
-        )
+        return StandardResponse(message="Абонемент успешно удалён.")
