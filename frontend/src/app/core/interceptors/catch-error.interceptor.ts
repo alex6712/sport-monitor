@@ -12,11 +12,10 @@ export const catchErrorInterceptor: HttpInterceptorFn = (request, next) => {
     return next(request).pipe(
         catchError((err: ApiErrorModel) => {
             const { error, status } = err;
-
             alertService
-                .open(error ? error.message : err.message, {
+                .open(error ? error.detail : err.message, {
                     label: `Ошибка ${status}`,
-                    appearance: 'warning',
+                    appearance: 'negative',
                 })
                 .subscribe();
 

@@ -1,0 +1,26 @@
+<div class="monitoring">
+    <div class="container">
+        <div class="monitoring__container">
+            <h1 class="monitoring__title">Статистика зала</h1>
+
+            <div class="monitoring__charts">
+                <app-pie-chart
+                    *ngFor="let item of twoPartsData"
+                    [title]="item.title"
+                    [categoryNames]="item.categoryNames || []"
+                    [statLabels]="item.statLabels"
+                    [current]="item.current"
+                    [max]="item.max">
+                </app-pie-chart>
+            </div>
+
+            <div class="monitoring__charts">
+                <app-pie-chart
+                    *ngFor="let item of severalPartsData"
+                    [title]="item.title"
+                    [data]="item.data">
+                </app-pie-chart>
+            </div>
+        </div>
+    </div>
+</div>

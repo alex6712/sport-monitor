@@ -1,20 +1,9 @@
-import {
-    HttpClient,
-    HttpErrorResponse,
-    HttpHeaders,
-    HttpParams,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { catchError, Observable, Subject, take, tap, throwError } from 'rxjs';
-import {
-    AuthState,
-    RefreshTokenData,
-    RegisterStatus,
-    UserCreate,
-    UserLogin,
-} from '../auth/auth.model';
+import { AuthState, RefreshTokenData, RegisterStatus, UserCreate, UserLogin } from '../auth/auth.model';
 import { ApiResMessageModel } from '../../models/api-response.model';
 
 @Injectable({ providedIn: 'root' })
@@ -24,16 +13,10 @@ export class AuthService {
 
     registerDone$: Observable<string> = this.registerSubject.asObservable();
 
-    constructor(
-        private http: HttpClient,
-        private jwtHelper: JwtHelperService,
-        private router: Router,
-    ) {}
+    constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private router: Router) {}
 
     postLogin(loginData: UserLogin): Observable<AuthState> {
-        const body = new HttpParams()
-            .set('username', loginData.username)
-            .set('password', loginData.password);
+        const body = new HttpParams().set('username', loginData.username).set('password', loginData.password);
 
         return this.http
             .post<AuthState>('auth/sign_in', body.toString(), {
@@ -55,16 +38,14 @@ export class AuthService {
     }
 
     postRegister(registerData: UserCreate): Observable<ApiResMessageModel> {
-        return this.http
-            .post<ApiResMessageModel>('auth/sign_up', registerData)
-            .pipe(
-                tap((info) => {
-                    return info;
-                }),
-                catchError((err: Error) => {
-                    return throwError(() => err);
-                }),
-            );
+        return this.http.post<ApiResMessageModel>('auth/sign_up', registerData).pipe(
+            tap((info) => {
+                return info;
+            }),
+            catchError((err: Error) => {
+                return throwError(() => err);
+            }),
+        );
     }
 
     getToken(refreshTokenData: RefreshTokenData): Observable<AuthState> {

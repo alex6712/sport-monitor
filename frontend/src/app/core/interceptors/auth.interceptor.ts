@@ -1,21 +1,6 @@
 import { inject } from '@angular/core';
-import {
-    HttpInterceptorFn,
-    HttpRequest,
-    HttpHandlerFn,
-    HttpEvent,
-    HttpStatusCode,
-} from '@angular/common/http';
-import {
-    catchError,
-    throwError,
-    switchMap,
-    finalize,
-    Subject,
-    tap,
-    filter,
-    Observable,
-} from 'rxjs';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpStatusCode } from '@angular/common/http';
+import { catchError, throwError, switchMap, finalize, Subject, tap, filter, Observable, EMPTY } from 'rxjs';
 
 import { AuthService } from '../../state/auth/auth.service';
 import { ApiErrorModel } from '../../models/api-response.model';
@@ -41,19 +26,12 @@ export const authInterceptor: HttpInterceptorFn = (
     return next(request).pipe(
         catchError((response: ApiErrorModel) => {
             const { status, error, url } = response;
-            console.log(response);
-            if (
-                status === HttpStatusCode.Unauthorized &&
-                !url?.includes('sign_in')
-            ) {
+
+            if (status === HttpStatusCode.Unauthorized) {
                 return handleUnauthorizedError(request, next, authService);
             }
 
-            // ЕСЛИ ОТПРАВЛЯЕМ НЕ ПРАВИЛЬНЫЙ ТОКЕН ТО ЧТО ПОЛУЧАЕМ?????
-            if (
-                status === HttpStatusCode.BadRequest
-                // && error?.status === 'User_IncorrectToken'
-            ) {
+            if (status === HttpStatusCode.Forbidden && error?.detail === 'Signature has expired.') {
                 authService.logout();
             }
 
@@ -102,7 +80,6 @@ function handleUnauthorizedError(
                     }),
                 },
             });
-
             return next(updatedRequest);
         }),
         catchError(() => {
