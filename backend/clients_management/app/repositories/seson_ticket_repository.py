@@ -55,7 +55,9 @@ class SeasonTicketRepository(RepositoryInterface):
             select(SeasonTicket).where(SeasonTicket.id == season_ticket_id)
         )
 
-    async def add_season_ticket(self, season_ticket_data: SeasonTicketRequest):
+    async def add_season_ticket(
+        self, season_ticket_data: SeasonTicketRequest
+    ) -> SeasonTicket:
         """Добавляет новый абонемент в сессию базы данных.
 
         Создаёт объект модели `SeasonTicket` из данных запроса и добавляет его в текущую сессию.
@@ -65,13 +67,23 @@ class SeasonTicketRepository(RepositoryInterface):
         season_ticket_data : SeasonTicketRequest
             Объект запроса с данными для создания абонемента.
 
+        Returns
+        -------
+        season_ticket : SeasonTicket
+            Добавленная запись абонемента.
+
         Notes
         -----
         - Метод не выполняет `commit()` — изменения необходимо зафиксировать отдельно.
         - Использует `model_dump()` для преобразования Pydantic-модели в словарь.
         """
 
-        self.session.add(SeasonTicket(**season_ticket_data.model_dump()))
+        self.session.add(
+            season_ticket := SeasonTicket(**season_ticket_data.model_dump())
+        )
+        await self.session.flush()
+
+        return season_ticket
 
     async def delete_season_ticket(self, season_ticket: SeasonTicket):
         """Удаляет абонемент из сессии базы данных.

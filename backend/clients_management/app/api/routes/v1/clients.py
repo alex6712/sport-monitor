@@ -16,6 +16,7 @@ from app.schemas.v1.requests import ClientRequest
 from app.schemas.v1.responses import (
     ClientsResponse,
     ClientResponse,
+    CreatedResponse,
     StandardResponse,
 )
 from app.services import ClientService
@@ -98,7 +99,7 @@ async def client_by_id(
 
 @router.post(
     "/",
-    response_model=StandardResponse,
+    response_model=CreatedResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Добавляет запись о новом клиенте.",
 )
@@ -123,8 +124,8 @@ async def add_client(
 
     Returns
     -------
-    StandardResponse
-        Стандартный ответ API, содержащий сообщение об успешном создании клиента и/или его идентификатор.
+    CreatedResponse
+        Ответ API, содержащий сообщение об успешном создании клиента и его идентификатор.
 
     Raises
     ------

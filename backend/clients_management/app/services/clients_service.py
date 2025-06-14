@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
+from app.database.tables.entities import Client
 from app.repositories import ClientRepository
 from app.schemas.client import CompactClientModel, ClientModel
 from app.schemas.group import CompactGroupModel
@@ -14,6 +15,7 @@ from app.schemas.v1.requests import ClientRequest
 from app.schemas.v1.responses import (
     ClientResponse,
     ClientsResponse,
+    CreatedResponse,
     StandardResponse,
 )
 
@@ -155,7 +157,7 @@ class ClientService:
 
         return ClientResponse(client=client)
 
-    async def add_client(self, client_data: ClientRequest) -> StandardResponse:
+    async def add_client(self, client_data: ClientRequest) -> CreatedResponse:
         """Добавляет нового клиента в базу данных.
 
         Пытается создать новую запись клиента на основе переданных данных.
@@ -170,8 +172,8 @@ class ClientService:
 
         Returns
         -------
-        StandardResponse
-            Объект стандартного ответа с кодом 201 и сообщением об успешном создании клиента.
+        CreatedResponse
+            Объект ответа с кодом 201 и сообщением об успешном создании клиента.
 
         Raises
         ------
@@ -186,7 +188,7 @@ class ClientService:
         - Производит парсинг сообщения об ошибке базы данных для извлечения конфликтующего столбца и значения.
         """
         try:
-            await self.client_repo.add_client(client_data)
+            client: Client = await self.client_repo.add_client(client_data)
             await self.client_repo.commit()
         except IntegrityError as integrity_error:
             await self.client_repo.rollback()
@@ -204,9 +206,9 @@ class ClientService:
                 detail="Not enough data in request.",
             )
 
-        return StandardResponse(
-            code=status.HTTP_201_CREATED,
+        return CreatedResponse(
             message="Клиент создан успешно.",
+            id=client.id,
         )
 
     async def update_client(

@@ -14,6 +14,7 @@ from app.api.dependencies.tokens import validate_access_token
 from app.database.tables.entities import User
 from app.schemas.v1.requests import SeasonTicketRequest
 from app.schemas.v1.responses import (
+    CreatedResponse,
     StandardResponse,
 )
 from app.services import SeasonTicketService
@@ -26,7 +27,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    response_model=StandardResponse,
+    response_model=CreatedResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Добавляет запись о новом абонементе.",
 )
@@ -53,7 +54,7 @@ async def add_season_ticket(
 
     Returns
     -------
-    StandardResponse
+    CreatedResponse
         Сообщение об успешном создании абонемента с кодом 201.
     """
     return await season_ticket_service.add_season_ticket(season_ticket_data)

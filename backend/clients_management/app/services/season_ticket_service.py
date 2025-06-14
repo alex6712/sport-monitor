@@ -3,9 +3,10 @@ from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
+from app.database.tables.entities import SeasonTicket
 from app.repositories import SeasonTicketRepository
 from app.schemas.v1.requests import SeasonTicketRequest
-from app.schemas.v1.responses import StandardResponse
+from app.schemas.v1.responses import CreatedResponse, StandardResponse
 
 
 class SeasonTicketService:
@@ -34,7 +35,7 @@ class SeasonTicketService:
 
     async def add_season_ticket(
         self, season_ticket_data: SeasonTicketRequest
-    ) -> StandardResponse:
+    ) -> CreatedResponse:
         """Добавляет новый абонемент.
 
         Добавляет абонемент в базу данных и фиксирует изменения.
@@ -48,7 +49,7 @@ class SeasonTicketService:
 
         Returns
         -------
-        StandardResponse
+        CreatedResponse
             Ответ с кодом 201 и сообщением об успешном добавлении.
 
         Raises
@@ -57,7 +58,9 @@ class SeasonTicketService:
             - 404 Not Found: если связанный клиент не существует.
         """
         try:
-            await self.season_ticket_repo.add_season_ticket(season_ticket_data)
+            season_ticket: SeasonTicket = (
+                await self.season_ticket_repo.add_season_ticket(season_ticket_data)
+            )
             await self.season_ticket_repo.commit()
         except IntegrityError as _:
             await self.season_ticket_repo.rollback()
@@ -67,9 +70,14 @@ class SeasonTicketService:
                 detail=f"Клиент с id={season_ticket_data.client_id} не найден!",
             )
 
-        return StandardResponse(
-            code=status.HTTP_201_CREATED,
+        print(CreatedResponse(
             message="Абонемент успешно добавлен.",
+            id=season_ticket.id,
+        ))
+
+        return CreatedResponse(
+            message="Абонемент успешно добавлен.",
+            id=season_ticket.id,
         )
 
     async def update_season_ticket(

@@ -73,7 +73,7 @@ class ClientRepository(RepositoryInterface):
         """
         return await self.session.scalar(select(Client).where(Client.id == client_id))
 
-    async def add_client(self, client_data: ClientRequest):
+    async def add_client(self, client_data: ClientRequest) -> Client:
         """Добавляет нового клиента в сессию базы данных.
 
         Создаёт объект клиента на основе входных данных и добавляет его в текущую сессию SQLAlchemy.
@@ -83,8 +83,16 @@ class ClientRepository(RepositoryInterface):
         ----------
         client_data : ClientRequest
             Объект с данными нового клиента. Должен быть совместим с моделью `Client`.
+
+        Returns
+        -------
+        client : Client
+            Созданная запись клинета.
         """
-        self.session.add(Client(**client_data.model_dump()))
+        self.session.add(client := Client(**client_data.model_dump()))
+        await self.session.flush()
+
+        return client
 
     async def delete_client(self, client: Client):
         """Помечает объект клиента для удаления из базы данных.
