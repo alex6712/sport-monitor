@@ -7,7 +7,8 @@ from fastapi import (
     Depends,
     status,
     Body,
-    Path, HTTPException,
+    Path,
+    HTTPException,
 )
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +37,7 @@ router = APIRouter(
 async def start_visit(
     visit_data: Annotated[VisitRequest, Body()],
     _: Annotated[User, Depends(validate_access_token)],
-    session: Annotated[AsyncSession, Depends(get_session)]
+    session: Annotated[AsyncSession, Depends(get_session)],
 ):
     session.add(visit := Visit(**visit_data.model_dump()))
     await session.flush()
@@ -66,7 +67,7 @@ async def start_visit(
 async def end_visit(
     visit_id: Annotated[UUID, Path()],
     _: Annotated[User, Depends(validate_access_token)],
-    session: Annotated[AsyncSession, Depends(get_session)]
+    session: Annotated[AsyncSession, Depends(get_session)],
 ):
     visit: Visit = await session.scalar(select(Visit).where(Visit.id == visit_id))
     visit.visit_end = datetime.now(timezone.utc)
@@ -93,7 +94,7 @@ async def end_visit(
 async def delete_season_ticket(
     visit_id: Annotated[UUID, Path()],
     _: Annotated[User, Depends(validate_access_token)],
-    session: Annotated[AsyncSession, Depends(get_session)]
+    session: Annotated[AsyncSession, Depends(get_session)],
 ):
     await session.execute(delete(Visit).where(Visit.id == visit_id))
 

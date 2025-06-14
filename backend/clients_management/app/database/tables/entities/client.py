@@ -48,31 +48,38 @@ class Client(Base):
     photo_url: Mapped[str] = mapped_column(String(256), nullable=True)
 
     relationships: Mapped[List["Relationship"]] = relationship(
-        "Relationship", back_populates="client"
+        "Relationship", back_populates="client", cascade="all, delete-orphan"
     )
     groups: Mapped[List["Group"]] = relationship(
         "Group",
         secondary="relationship",
         viewonly=True,
+        cascade="all, delete-orphan",
     )
     season_tickets: Mapped[List["SeasonTicket"]] = relationship(
         "SeasonTicket",
         back_populates="client",
         order_by=SeasonTicket.expires_at,
+        cascade="all, delete-orphan",
     )
     transactions: Mapped[List["Transaction"]] = relationship(
         "Transaction",
         back_populates="client",
         order_by=Transaction.timestamp,
+        cascade="all, delete-orphan",
     )
     violations: Mapped[List["Violation"]] = relationship(
-        "Violation", back_populates="client"
+        "Violation", back_populates="client", cascade="all, delete-orphan"
     )
-    visits: Mapped[List["Visit"]] = relationship("Visit", back_populates="client")
+    visits: Mapped[List["Visit"]] = relationship(
+        "Visit", back_populates="client", cascade="all, delete-orphan"
+    )
 
-    comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="client")
+    comments: Mapped[List["Comment"]] = relationship(
+        "Comment", back_populates="client", cascade="all, delete-orphan"
+    )
     complaints: Mapped[List["Complaint"]] = relationship(
-        "Complaint", back_populates="client"
+        "Complaint", back_populates="client", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
