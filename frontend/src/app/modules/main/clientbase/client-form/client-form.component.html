@@ -1,4 +1,5 @@
-<form [formGroup]="form" (ngSubmit)="save()" class="clientform">
+<!-- (ngSubmit)="save()" -->
+<form [formGroup]="form" class="clientform">
     <tui-input formControlName="name">Имя*</tui-input>
     <tui-input formControlName="surname">Фамилия*</tui-input>
     <tui-input formControlName="patronymic">Отчество*</tui-input>
@@ -34,7 +35,7 @@
 
     <div class="buttons">
         <button tuiButton type="button" (click)="cancel()">Отмена</button>
-        <button tuiButton type="submit"
+        <button tuiButton type="submit" (click)="save()"
             [disabled]="form.invalid">Сохранить</button>
     </div>
 </form>

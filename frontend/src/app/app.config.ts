@@ -14,16 +14,9 @@ import { AuthService } from './state/auth/auth.service';
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        // provideEventPlugins(),
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(routes),
-        provideHttpClient(
-            withInterceptors([
-                baseUrlInterceptor,
-                authInterceptor,
-                catchErrorInterceptor,
-            ]),
-        ),
+        provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor, catchErrorInterceptor])),
         AuthService,
         JwtHelperService,
         {
